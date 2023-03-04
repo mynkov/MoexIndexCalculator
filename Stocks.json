@@ -1,0 +1,1698 @@
+{
+    "currencies": [
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "49df6540-ad58-c9d4-ccfb-c26eec3defe7",
+                    "ticker": "YNDX"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "17812807-8ed0-b6f8-5c13-c5bdf884f054",
+                    "ticker": "FXUS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f554433b-d1a9-8719-900f-bd09cf43ae9e",
+                    "ticker": "LSRG"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "d00745a7-cafe-c041-eb07-50578b1c67c6",
+                    "ticker": "FEES"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "8a1e39fb-915b-beeb-c29e-b0e7687980a2",
+                    "ticker": "GLTR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "d7382cfa-78fe-8d3d-c1b7-1bbf4f974751",
+                    "ticker": "GMKN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a420358f-cdf6-7c26-6612-2c05b20ef294",
+                    "ticker": "IRAO"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "2f086051-1708-f104-6d34-2cc4f95752a8",
+                    "ticker": "PLZL"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "21644312-97ed-b20c-4d23-0e1026896510",
+                    "ticker": "RUSB"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "82190d99-b635-53ae-57a6-9a71e5c7c52d",
+                    "ticker": "TATNP"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "b92b166e-0282-f5af-cdfd-21d61f06610b",
+                    "ticker": "FXRL"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "2b8a8283-bcbe-6cbb-fa2d-ea53d4f57653",
+                    "ticker": "FXTB"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "274665c8-ec91-d30f-eb0f-f3194bb6807b",
+                    "ticker": "ENPG"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "32c9b4c9-6aac-7049-9618-d39ede500cda",
+                    "ticker": "LKOH"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "3420ec5f-4d90-50cc-e499-25781c9befb0",
+                    "ticker": "MTSS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "af1f3684-bfa8-364f-f6d3-e86b685a15a0",
+                    "ticker": "NLMK"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "97cfc4a1-5f7b-f554-625b-397d79432828",
+                    "ticker": "ROSN"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "daffd55a-6727-0a92-5526-613d1b140963",
+                    "ticker": "FXRW"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "3ab80cc8-67a3-b60f-bf5c-68c1ca63b74b",
+                    "ticker": "VTBR"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "e37224df-83f5-217d-bed4-52e5325cd89a",
+                    "ticker": "SBMX"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "1dbbfaac-5b8c-238e-a77b-cab694404f57",
+                    "ticker": "CBOM"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b43022e7-78d4-282d-1c0c-f2ab4108b7bc",
+                    "ticker": "FIVE"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "eb476aed-1d7f-94d1-32e0-54c3c20a5dd7",
+                    "ticker": "GAZP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f6dd2208-8f90-c792-2d9f-7028520d776d",
+                    "ticker": "RTKM"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "665c5d62-a5ab-e862-2b6e-14185929fc50",
+                    "ticker": "VKCO"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "03b0fb52-f406-9587-df38-d6853886396a",
+                    "ticker": "RUAL"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f892242a-5cc7-7ce5-4344-0b29b80c7bdb",
+                    "ticker": "SBERP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b70f6732-9dde-5fe0-91c0-6b9a4b0a9573",
+                    "ticker": "SNGSP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b9baba46-44af-e683-ac58-a0c3b1bab199",
+                    "ticker": "CHMF"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f1b4dc82-b2bb-9215-a670-a4474a037267",
+                    "ticker": "FIXP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "66e2eaf3-b75d-e946-4c3a-8728a9d58245",
+                    "ticker": "MAGN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "1d6cb922-7c67-5ba8-eeff-d5a4a311f17d",
+                    "ticker": "NVTK"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "9046cb68-a6b7-a321-45f3-1bd531301e1d",
+                    "ticker": "PIKK"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "d85bc42a-9ce0-611f-12f3-04846d34a5f1",
+                    "ticker": "TRNFP"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "adea908d-3f8c-ef48-1c46-6b1de9b149db",
+                    "ticker": "FXDE"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "b5d7cd4a-efa4-d6bb-aaf0-82bd33485d27",
+                    "ticker": "FXWO"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ecb17201-160c-d0ed-c560-5f7ff1f0ee38",
+                    "ticker": "AFKS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ca5af9a7-55ef-b399-a41e-2a1d1130d914",
+                    "ticker": "MGNT"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b08c93a4-f659-cf5b-8d36-21b5bd0134df",
+                    "ticker": "MOEX"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ef542ddf-03ca-3df4-c754-9de1b30196c3",
+                    "ticker": "PHOR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b3a38986-c57b-6bab-84a2-695550df0fec",
+                    "ticker": "POLY"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a23a6bb9-8e7f-0684-d785-b825ebd014e7",
+                    "ticker": "AFLT"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "5bcfe659-6ac5-93f8-c245-d72dab930cfd",
+                    "ticker": "ALRS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "75afbce1-0307-9dd4-fe10-439e4ea10a3d",
+                    "ticker": "OZON"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "2a042d6b-c1d1-b865-d078-f8840a0111dd",
+                    "ticker": "POGR"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "c3a51395-3cad-42e8-5783-c6fd33e3f92d",
+                    "ticker": "FXCN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a7d6bafc-00b1-4c2a-ce1c-1f5d7bb1257c",
+                    "ticker": "AGRO"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "6ab0eae6-e659-65cd-ccd6-1be8cde3408d",
+                    "ticker": "HYDR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "72fe46ea-487d-edaa-119a-ad443d5395fa",
+                    "ticker": "TCSG"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "634d8fe1-66a1-5fe4-7a67-8799916957c2",
+                    "ticker": "RTKMP"
+                }
+            ],
+            "type": "RUB",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 2171243.87
+            },
+            "valueRelative": 99.47
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "a7bda4b3-28e3-8deb-e5ed-57d5d0189696",
+                    "ticker": "TCS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "01093a25-72dc-2761-6c46-ff4053956946",
+                    "ticker": "HHR"
+                }
+            ],
+            "type": "USD",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 11386.47
+            },
+            "valueRelative": 0.52
+        },
+        {
+            "type": "EUR",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 80.29
+            },
+            "valueRelative": 0
+        },
+        {
+            "type": "GBP",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 48
+            },
+            "valueRelative": 0
+        },
+        {
+            "type": "CNY",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 10.93
+            },
+            "valueRelative": 0.01
+        }
+    ],
+    "instruments": [
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "49df6540-ad58-c9d4-ccfb-c26eec3defe7",
+                    "ticker": "YNDX"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f554433b-d1a9-8719-900f-bd09cf43ae9e",
+                    "ticker": "LSRG"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "d00745a7-cafe-c041-eb07-50578b1c67c6",
+                    "ticker": "FEES"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "8a1e39fb-915b-beeb-c29e-b0e7687980a2",
+                    "ticker": "GLTR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "d7382cfa-78fe-8d3d-c1b7-1bbf4f974751",
+                    "ticker": "GMKN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a420358f-cdf6-7c26-6612-2c05b20ef294",
+                    "ticker": "IRAO"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "2f086051-1708-f104-6d34-2cc4f95752a8",
+                    "ticker": "PLZL"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "82190d99-b635-53ae-57a6-9a71e5c7c52d",
+                    "ticker": "TATNP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "274665c8-ec91-d30f-eb0f-f3194bb6807b",
+                    "ticker": "ENPG"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "32c9b4c9-6aac-7049-9618-d39ede500cda",
+                    "ticker": "LKOH"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "3420ec5f-4d90-50cc-e499-25781c9befb0",
+                    "ticker": "MTSS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "af1f3684-bfa8-364f-f6d3-e86b685a15a0",
+                    "ticker": "NLMK"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "97cfc4a1-5f7b-f554-625b-397d79432828",
+                    "ticker": "ROSN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a7bda4b3-28e3-8deb-e5ed-57d5d0189696",
+                    "ticker": "TCS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "3ab80cc8-67a3-b60f-bf5c-68c1ca63b74b",
+                    "ticker": "VTBR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "1dbbfaac-5b8c-238e-a77b-cab694404f57",
+                    "ticker": "CBOM"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b43022e7-78d4-282d-1c0c-f2ab4108b7bc",
+                    "ticker": "FIVE"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "eb476aed-1d7f-94d1-32e0-54c3c20a5dd7",
+                    "ticker": "GAZP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f6dd2208-8f90-c792-2d9f-7028520d776d",
+                    "ticker": "RTKM"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "665c5d62-a5ab-e862-2b6e-14185929fc50",
+                    "ticker": "VKCO"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "03b0fb52-f406-9587-df38-d6853886396a",
+                    "ticker": "RUAL"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f892242a-5cc7-7ce5-4344-0b29b80c7bdb",
+                    "ticker": "SBERP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b70f6732-9dde-5fe0-91c0-6b9a4b0a9573",
+                    "ticker": "SNGSP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b9baba46-44af-e683-ac58-a0c3b1bab199",
+                    "ticker": "CHMF"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f1b4dc82-b2bb-9215-a670-a4474a037267",
+                    "ticker": "FIXP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "66e2eaf3-b75d-e946-4c3a-8728a9d58245",
+                    "ticker": "MAGN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "1d6cb922-7c67-5ba8-eeff-d5a4a311f17d",
+                    "ticker": "NVTK"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "9046cb68-a6b7-a321-45f3-1bd531301e1d",
+                    "ticker": "PIKK"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "d85bc42a-9ce0-611f-12f3-04846d34a5f1",
+                    "ticker": "TRNFP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "01093a25-72dc-2761-6c46-ff4053956946",
+                    "ticker": "HHR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ecb17201-160c-d0ed-c560-5f7ff1f0ee38",
+                    "ticker": "AFKS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ca5af9a7-55ef-b399-a41e-2a1d1130d914",
+                    "ticker": "MGNT"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b08c93a4-f659-cf5b-8d36-21b5bd0134df",
+                    "ticker": "MOEX"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ef542ddf-03ca-3df4-c754-9de1b30196c3",
+                    "ticker": "PHOR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b3a38986-c57b-6bab-84a2-695550df0fec",
+                    "ticker": "POLY"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a23a6bb9-8e7f-0684-d785-b825ebd014e7",
+                    "ticker": "AFLT"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "5bcfe659-6ac5-93f8-c245-d72dab930cfd",
+                    "ticker": "ALRS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "75afbce1-0307-9dd4-fe10-439e4ea10a3d",
+                    "ticker": "OZON"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "2a042d6b-c1d1-b865-d078-f8840a0111dd",
+                    "ticker": "POGR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a7d6bafc-00b1-4c2a-ce1c-1f5d7bb1257c",
+                    "ticker": "AGRO"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "6ab0eae6-e659-65cd-ccd6-1be8cde3408d",
+                    "ticker": "HYDR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "72fe46ea-487d-edaa-119a-ad443d5395fa",
+                    "ticker": "TCSG"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "634d8fe1-66a1-5fe4-7a67-8799916957c2",
+                    "ticker": "RTKMP"
+                }
+            ],
+            "type": "Акции",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 1729230.91
+            },
+            "valueRelative": 79.22
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "etf",
+                    "positionUid": "17812807-8ed0-b6f8-5c13-c5bdf884f054",
+                    "ticker": "FXUS"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "21644312-97ed-b20c-4d23-0e1026896510",
+                    "ticker": "RUSB"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "b92b166e-0282-f5af-cdfd-21d61f06610b",
+                    "ticker": "FXRL"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "2b8a8283-bcbe-6cbb-fa2d-ea53d4f57653",
+                    "ticker": "FXTB"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "daffd55a-6727-0a92-5526-613d1b140963",
+                    "ticker": "FXRW"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "e37224df-83f5-217d-bed4-52e5325cd89a",
+                    "ticker": "SBMX"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "adea908d-3f8c-ef48-1c46-6b1de9b149db",
+                    "ticker": "FXDE"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "b5d7cd4a-efa4-d6bb-aaf0-82bd33485d27",
+                    "ticker": "FXWO"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "c3a51395-3cad-42e8-5783-c6fd33e3f92d",
+                    "ticker": "FXCN"
+                }
+            ],
+            "type": "Фонды",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 452083.92
+            },
+            "valueRelative": 20.71
+        },
+        {
+            "type": "Валюта и Металлы",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 1454.73
+            },
+            "valueRelative": 0.07
+        }
+    ],
+    "issuers": [
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "etf",
+                    "positionUid": "17812807-8ed0-b6f8-5c13-c5bdf884f054",
+                    "ticker": "FXUS"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "b92b166e-0282-f5af-cdfd-21d61f06610b",
+                    "ticker": "FXRL"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "2b8a8283-bcbe-6cbb-fa2d-ea53d4f57653",
+                    "ticker": "FXTB"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "daffd55a-6727-0a92-5526-613d1b140963",
+                    "ticker": "FXRW"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "adea908d-3f8c-ef48-1c46-6b1de9b149db",
+                    "ticker": "FXDE"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "b5d7cd4a-efa4-d6bb-aaf0-82bd33485d27",
+                    "ticker": "FXWO"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "c3a51395-3cad-42e8-5783-c6fd33e3f92d",
+                    "ticker": "FXCN"
+                }
+            ],
+            "type": "FinEx",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 450460.44
+            },
+            "valueRelative": 20.64
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "f892242a-5cc7-7ce5-4344-0b29b80c7bdb",
+                    "ticker": "SBERP"
+                }
+            ],
+            "type": "Сбер Банк",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 178832.6
+            },
+            "valueRelative": 8.19
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "eb476aed-1d7f-94d1-32e0-54c3c20a5dd7",
+                    "ticker": "GAZP"
+                }
+            ],
+            "type": "Газпром",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 173628.9
+            },
+            "valueRelative": 7.95
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "97cfc4a1-5f7b-f554-625b-397d79432828",
+                    "ticker": "ROSN"
+                }
+            ],
+            "type": "Роснефть",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 168277.2
+            },
+            "valueRelative": 7.71
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "32c9b4c9-6aac-7049-9618-d39ede500cda",
+                    "ticker": "LKOH"
+                }
+            ],
+            "type": "Лукойл",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 124945.5
+            },
+            "valueRelative": 5.72
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "1d6cb922-7c67-5ba8-eeff-d5a4a311f17d",
+                    "ticker": "NVTK"
+                }
+            ],
+            "type": "Новатэк",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 114725.4
+            },
+            "valueRelative": 5.26
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "d7382cfa-78fe-8d3d-c1b7-1bbf4f974751",
+                    "ticker": "GMKN"
+                }
+            ],
+            "type": "Норильский никель",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 101934
+            },
+            "valueRelative": 4.67
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "d85bc42a-9ce0-611f-12f3-04846d34a5f1",
+                    "ticker": "TRNFP"
+                }
+            ],
+            "type": "Транснефть",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 91700
+            },
+            "valueRelative": 4.2
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "49df6540-ad58-c9d4-ccfb-c26eec3defe7",
+                    "ticker": "YNDX"
+                }
+            ],
+            "type": "Яндекс",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 87304.8
+            },
+            "valueRelative": 4
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "2f086051-1708-f104-6d34-2cc4f95752a8",
+                    "ticker": "PLZL"
+                }
+            ],
+            "type": "Полюс Золото",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 62692
+            },
+            "valueRelative": 2.87
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "82190d99-b635-53ae-57a6-9a71e5c7c52d",
+                    "ticker": "TATNP"
+                }
+            ],
+            "type": "Татнефть",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 51284.8
+            },
+            "valueRelative": 2.35
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "ca5af9a7-55ef-b399-a41e-2a1d1130d914",
+                    "ticker": "MGNT"
+                }
+            ],
+            "type": "Магнит",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 45465
+            },
+            "valueRelative": 2.08
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "ef542ddf-03ca-3df4-c754-9de1b30196c3",
+                    "ticker": "PHOR"
+                }
+            ],
+            "type": "Phosagro",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 42540
+            },
+            "valueRelative": 1.95
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "3420ec5f-4d90-50cc-e499-25781c9befb0",
+                    "ticker": "MTSS"
+                }
+            ],
+            "type": "МТС",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 38947.5
+            },
+            "valueRelative": 1.78
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "a7d6bafc-00b1-4c2a-ce1c-1f5d7bb1257c",
+                    "ticker": "AGRO"
+                }
+            ],
+            "type": "Русагро",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 38610
+            },
+            "valueRelative": 1.77
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "8a1e39fb-915b-beeb-c29e-b0e7687980a2",
+                    "ticker": "GLTR"
+                }
+            ],
+            "type": "Globaltrans Investment",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 38215.4
+            },
+            "valueRelative": 1.75
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "a420358f-cdf6-7c26-6612-2c05b20ef294",
+                    "ticker": "IRAO"
+                }
+            ],
+            "type": "Интер РАО ЕЭС",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 37506.9
+            },
+            "valueRelative": 1.72
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "b9baba46-44af-e683-ac58-a0c3b1bab199",
+                    "ticker": "CHMF"
+                }
+            ],
+            "type": "Северсталь",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 36155.6
+            },
+            "valueRelative": 1.66
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "b08c93a4-f659-cf5b-8d36-21b5bd0134df",
+                    "ticker": "MOEX"
+                }
+            ],
+            "type": "Московская биржа",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 29487.5
+            },
+            "valueRelative": 1.35
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "a7bda4b3-28e3-8deb-e5ed-57d5d0189696",
+                    "ticker": "TCS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "72fe46ea-487d-edaa-119a-ad443d5395fa",
+                    "ticker": "TCSG"
+                }
+            ],
+            "type": "Tinkoff",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 27866.7
+            },
+            "valueRelative": 1.28
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "b70f6732-9dde-5fe0-91c0-6b9a4b0a9573",
+                    "ticker": "SNGSP"
+                }
+            ],
+            "type": "Сургутнефтегаз",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 27805
+            },
+            "valueRelative": 1.27
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "af1f3684-bfa8-364f-f6d3-e86b685a15a0",
+                    "ticker": "NLMK"
+                }
+            ],
+            "type": "НЛМК",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 26947.2
+            },
+            "valueRelative": 1.23
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "b3a38986-c57b-6bab-84a2-695550df0fec",
+                    "ticker": "POLY"
+                }
+            ],
+            "type": "Polymetal",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 25340
+            },
+            "valueRelative": 1.16
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "b43022e7-78d4-282d-1c0c-f2ab4108b7bc",
+                    "ticker": "FIVE"
+                }
+            ],
+            "type": "X5 Retail Group",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 22042.5
+            },
+            "valueRelative": 1.01
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "d00745a7-cafe-c041-eb07-50578b1c67c6",
+                    "ticker": "FEES"
+                }
+            ],
+            "type": "Российские сети",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 21288
+            },
+            "valueRelative": 0.98
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "75afbce1-0307-9dd4-fe10-439e4ea10a3d",
+                    "ticker": "OZON"
+                }
+            ],
+            "type": "OZON",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 16785
+            },
+            "valueRelative": 0.77
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "5bcfe659-6ac5-93f8-c245-d72dab930cfd",
+                    "ticker": "ALRS"
+                }
+            ],
+            "type": "АЛРОСА",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 13057.8
+            },
+            "valueRelative": 0.6
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "66e2eaf3-b75d-e946-4c3a-8728a9d58245",
+                    "ticker": "MAGN"
+                }
+            ],
+            "type": "ММК",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 10713.6
+            },
+            "valueRelative": 0.49
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "f6dd2208-8f90-c792-2d9f-7028520d776d",
+                    "ticker": "RTKM"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "634d8fe1-66a1-5fe4-7a67-8799916957c2",
+                    "ticker": "RTKMP"
+                }
+            ],
+            "type": "Ростелеком",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 9428
+            },
+            "valueRelative": 0.43
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "9046cb68-a6b7-a321-45f3-1bd531301e1d",
+                    "ticker": "PIKK"
+                }
+            ],
+            "type": "ПИК-Корпорация",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 9336
+            },
+            "valueRelative": 0.43
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "3ab80cc8-67a3-b60f-bf5c-68c1ca63b74b",
+                    "ticker": "VTBR"
+                }
+            ],
+            "type": "ВТБ",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 8624.2
+            },
+            "valueRelative": 0.4
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "03b0fb52-f406-9587-df38-d6853886396a",
+                    "ticker": "RUAL"
+                }
+            ],
+            "type": "РУСАЛ",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 8259
+            },
+            "valueRelative": 0.38
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "665c5d62-a5ab-e862-2b6e-14185929fc50",
+                    "ticker": "VKCO"
+                }
+            ],
+            "type": "VK",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 8156.6
+            },
+            "valueRelative": 0.37
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "6ab0eae6-e659-65cd-ccd6-1be8cde3408d",
+                    "ticker": "HYDR"
+                }
+            ],
+            "type": "РусГидро",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 7119
+            },
+            "valueRelative": 0.33
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "a23a6bb9-8e7f-0684-d785-b825ebd014e7",
+                    "ticker": "AFLT"
+                }
+            ],
+            "type": "Аэрофлот",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 5350.4
+            },
+            "valueRelative": 0.25
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "ecb17201-160c-d0ed-c560-5f7ff1f0ee38",
+                    "ticker": "AFKS"
+                }
+            ],
+            "type": "АФК Система",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 5299.2
+            },
+            "valueRelative": 0.24
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "1dbbfaac-5b8c-238e-a77b-cab694404f57",
+                    "ticker": "CBOM"
+                }
+            ],
+            "type": "Московский кредитный банк",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 4918.9
+            },
+            "valueRelative": 0.23
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "274665c8-ec91-d30f-eb0f-f3194bb6807b",
+                    "ticker": "ENPG"
+                }
+            ],
+            "type": "En+ Group",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 4030
+            },
+            "valueRelative": 0.18
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "f554433b-d1a9-8719-900f-bd09cf43ae9e",
+                    "ticker": "LSRG"
+                }
+            ],
+            "type": "ЛСР",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 2391
+            },
+            "valueRelative": 0.11
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "etf",
+                    "positionUid": "21644312-97ed-b20c-4d23-0e1026896510",
+                    "ticker": "RUSB"
+                }
+            ],
+            "type": "ITI Funds",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 1611
+            },
+            "valueRelative": 0.07
+        },
+        {
+            "type": "Денежные средства",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 1454.73
+            },
+            "valueRelative": 0.07
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "01093a25-72dc-2761-6c46-ff4053956946",
+                    "ticker": "HHR"
+                }
+            ],
+            "type": "HeadHunter Group",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 1172.3
+            },
+            "valueRelative": 0.05
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "f1b4dc82-b2bb-9215-a670-a4474a037267",
+                    "ticker": "FIXP"
+                }
+            ],
+            "type": "FixPrice",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 699.4
+            },
+            "valueRelative": 0.03
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "2a042d6b-c1d1-b865-d078-f8840a0111dd",
+                    "ticker": "POGR"
+                }
+            ],
+            "type": "Petropavlovsk",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 348
+            },
+            "valueRelative": 0.02
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "etf",
+                    "positionUid": "e37224df-83f5-217d-bed4-52e5325cd89a",
+                    "ticker": "SBMX"
+                }
+            ],
+            "type": "УК Первая",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 12.48
+            },
+            "valueRelative": 0
+        }
+    ],
+    "sectors": [
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "82190d99-b635-53ae-57a6-9a71e5c7c52d",
+                    "ticker": "TATNP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "32c9b4c9-6aac-7049-9618-d39ede500cda",
+                    "ticker": "LKOH"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "97cfc4a1-5f7b-f554-625b-397d79432828",
+                    "ticker": "ROSN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "eb476aed-1d7f-94d1-32e0-54c3c20a5dd7",
+                    "ticker": "GAZP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b70f6732-9dde-5fe0-91c0-6b9a4b0a9573",
+                    "ticker": "SNGSP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "1d6cb922-7c67-5ba8-eeff-d5a4a311f17d",
+                    "ticker": "NVTK"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "d85bc42a-9ce0-611f-12f3-04846d34a5f1",
+                    "ticker": "TRNFP"
+                }
+            ],
+            "type": "Энергетика",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 752366.8
+            },
+            "valueRelative": 34.47
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "etf",
+                    "positionUid": "17812807-8ed0-b6f8-5c13-c5bdf884f054",
+                    "ticker": "FXUS"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "21644312-97ed-b20c-4d23-0e1026896510",
+                    "ticker": "RUSB"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "b92b166e-0282-f5af-cdfd-21d61f06610b",
+                    "ticker": "FXRL"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "2b8a8283-bcbe-6cbb-fa2d-ea53d4f57653",
+                    "ticker": "FXTB"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "daffd55a-6727-0a92-5526-613d1b140963",
+                    "ticker": "FXRW"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "e37224df-83f5-217d-bed4-52e5325cd89a",
+                    "ticker": "SBMX"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "adea908d-3f8c-ef48-1c46-6b1de9b149db",
+                    "ticker": "FXDE"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "b5d7cd4a-efa4-d6bb-aaf0-82bd33485d27",
+                    "ticker": "FXWO"
+                },
+                {
+                    "positionType": "etf",
+                    "positionUid": "c3a51395-3cad-42e8-5783-c6fd33e3f92d",
+                    "ticker": "FXCN"
+                }
+            ],
+            "type": "Другое",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 452083.92
+            },
+            "valueRelative": 20.71
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "d7382cfa-78fe-8d3d-c1b7-1bbf4f974751",
+                    "ticker": "GMKN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "2f086051-1708-f104-6d34-2cc4f95752a8",
+                    "ticker": "PLZL"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "274665c8-ec91-d30f-eb0f-f3194bb6807b",
+                    "ticker": "ENPG"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "af1f3684-bfa8-364f-f6d3-e86b685a15a0",
+                    "ticker": "NLMK"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "03b0fb52-f406-9587-df38-d6853886396a",
+                    "ticker": "RUAL"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b9baba46-44af-e683-ac58-a0c3b1bab199",
+                    "ticker": "CHMF"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "66e2eaf3-b75d-e946-4c3a-8728a9d58245",
+                    "ticker": "MAGN"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ef542ddf-03ca-3df4-c754-9de1b30196c3",
+                    "ticker": "PHOR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b3a38986-c57b-6bab-84a2-695550df0fec",
+                    "ticker": "POLY"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "5bcfe659-6ac5-93f8-c245-d72dab930cfd",
+                    "ticker": "ALRS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "2a042d6b-c1d1-b865-d078-f8840a0111dd",
+                    "ticker": "POGR"
+                }
+            ],
+            "type": "Сырьевая промышленность",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 332017.2
+            },
+            "valueRelative": 15.21
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "a7bda4b3-28e3-8deb-e5ed-57d5d0189696",
+                    "ticker": "TCS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "3ab80cc8-67a3-b60f-bf5c-68c1ca63b74b",
+                    "ticker": "VTBR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "1dbbfaac-5b8c-238e-a77b-cab694404f57",
+                    "ticker": "CBOM"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f892242a-5cc7-7ce5-4344-0b29b80c7bdb",
+                    "ticker": "SBERP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ecb17201-160c-d0ed-c560-5f7ff1f0ee38",
+                    "ticker": "AFKS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "b08c93a4-f659-cf5b-8d36-21b5bd0134df",
+                    "ticker": "MOEX"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "72fe46ea-487d-edaa-119a-ad443d5395fa",
+                    "ticker": "TCSG"
+                }
+            ],
+            "type": "Финансовый сектор",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 255029.1
+            },
+            "valueRelative": 11.68
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "49df6540-ad58-c9d4-ccfb-c26eec3defe7",
+                    "ticker": "YNDX"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "3420ec5f-4d90-50cc-e499-25781c9befb0",
+                    "ticker": "MTSS"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f6dd2208-8f90-c792-2d9f-7028520d776d",
+                    "ticker": "RTKM"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "634d8fe1-66a1-5fe4-7a67-8799916957c2",
+                    "ticker": "RTKMP"
+                }
+            ],
+            "type": "Телекоммуникации",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 135680.3
+            },
+            "valueRelative": 6.22
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "b43022e7-78d4-282d-1c0c-f2ab4108b7bc",
+                    "ticker": "FIVE"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "f1b4dc82-b2bb-9215-a670-a4474a037267",
+                    "ticker": "FIXP"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "01093a25-72dc-2761-6c46-ff4053956946",
+                    "ticker": "HHR"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "ca5af9a7-55ef-b399-a41e-2a1d1130d914",
+                    "ticker": "MGNT"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a23a6bb9-8e7f-0684-d785-b825ebd014e7",
+                    "ticker": "AFLT"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "75afbce1-0307-9dd4-fe10-439e4ea10a3d",
+                    "ticker": "OZON"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a7d6bafc-00b1-4c2a-ce1c-1f5d7bb1257c",
+                    "ticker": "AGRO"
+                }
+            ],
+            "type": "Потребительские товары",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 130124.6
+            },
+            "valueRelative": 5.96
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "d00745a7-cafe-c041-eb07-50578b1c67c6",
+                    "ticker": "FEES"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "a420358f-cdf6-7c26-6612-2c05b20ef294",
+                    "ticker": "IRAO"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "6ab0eae6-e659-65cd-ccd6-1be8cde3408d",
+                    "ticker": "HYDR"
+                }
+            ],
+            "type": "Электроэнергетика",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 65913.9
+            },
+            "valueRelative": 3.02
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "8a1e39fb-915b-beeb-c29e-b0e7687980a2",
+                    "ticker": "GLTR"
+                }
+            ],
+            "type": "Машиностроение и транспорт",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 38215.4
+            },
+            "valueRelative": 1.75
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "f554433b-d1a9-8719-900f-bd09cf43ae9e",
+                    "ticker": "LSRG"
+                },
+                {
+                    "positionType": "stock",
+                    "positionUid": "9046cb68-a6b7-a321-45f3-1bd531301e1d",
+                    "ticker": "PIKK"
+                }
+            ],
+            "type": "Недвижимость",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 11727
+            },
+            "valueRelative": 0.54
+        },
+        {
+            "instrumentInfo": [
+                {
+                    "positionType": "stock",
+                    "positionUid": "665c5d62-a5ab-e862-2b6e-14185929fc50",
+                    "ticker": "VKCO"
+                }
+            ],
+            "type": "Информационные технологии",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 8156.6
+            },
+            "valueRelative": 0.37
+        },
+        {
+            "type": "Денежные средства",
+            "valueAbsolute": {
+                "currency": "RUB",
+                "value": 1454.73
+            },
+            "valueRelative": 0.07
+        }
+    ],
+    "totalAmountCurrency": {
+        "currency": "RUB",
+        "value": 2182769.55
+    },
+    "totalAmountCurrencyQty": 5,
+    "totalAmountInstrument": {
+        "currency": "RUB",
+        "value": 2182769.55
+    },
+    "totalAmountInstrumentQty": 3,
+    "totalAmountIssuer": {
+        "currency": "RUB",
+        "value": 2182769.55
+    },
+    "totalAmountIssuerQty": 45,
+    "totalAmountSector": {
+        "currency": "RUB",
+        "value": 2182769.55
+    },
+    "totalAmountSectorQty": 11
+}

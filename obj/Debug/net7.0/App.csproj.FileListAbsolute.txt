@@ -1,0 +1,17 @@
+C:\Stocks\App\bin\Debug\net7.0\App.exe
+C:\Stocks\App\bin\Debug\net7.0\App.deps.json
+C:\Stocks\App\bin\Debug\net7.0\App.runtimeconfig.json
+C:\Stocks\App\bin\Debug\net7.0\App.dll
+C:\Stocks\App\bin\Debug\net7.0\App.pdb
+C:\Stocks\App\obj\Debug\net7.0\App.csproj.AssemblyReference.cache
+C:\Stocks\App\obj\Debug\net7.0\App.GeneratedMSBuildEditorConfig.editorconfig
+C:\Stocks\App\obj\Debug\net7.0\App.AssemblyInfoInputs.cache
+C:\Stocks\App\obj\Debug\net7.0\App.AssemblyInfo.cs
+C:\Stocks\App\obj\Debug\net7.0\App.csproj.CoreCompileInputs.cache
+C:\Stocks\App\obj\Debug\net7.0\App.dll
+C:\Stocks\App\obj\Debug\net7.0\refint\App.dll
+C:\Stocks\App\obj\Debug\net7.0\App.pdb
+C:\Stocks\App\obj\Debug\net7.0\App.genruntimeconfig.cache
+C:\Stocks\App\obj\Debug\net7.0\ref\App.dll
+C:\Stocks\App\bin\Debug\net7.0\AngleSharp.dll
+C:\Stocks\App\obj\Debug\net7.0\App.csproj.CopyComplete
