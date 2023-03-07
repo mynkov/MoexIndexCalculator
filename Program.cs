@@ -2,6 +2,7 @@
 using System.Text.Json;
 using AngleSharp;
 using QuickType;
+using QuickTypeTicker;
 
 var checkPriviledgedStocks = true;
 File.Delete("output.txt");
@@ -14,13 +15,18 @@ var bigCompanies = await GetCompanies("https://smart-lab.ru/q/index_stocks/IMOEX
 
 // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
 var text = File.ReadAllText("Stocks.json");
-var stocks = JsonSerializer.Deserialize<Stocks>(text, Converter.Settings);
+var stocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
 
 var agg = new List<Aggregate>();
+var client = new HttpClient(); 
 foreach (var company in bigCompanies)
 {
         var myStock = stocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == company.Ticker));
-        agg.Add(new Aggregate(company, myStock ?? new CurrencyElement{ ValueAbsolute = new TotalAmountCurrency() }));
+
+        var result = await client.GetStringAsync($"https://www.tinkoff.ru/api/trading/stocks/get?ticker={company.Ticker}");
+        var tickerInfo = JsonSerializer.Deserialize<TickerInfo>(result, QuickTypeTicker.Converter.Settings);
+
+        agg.Add(new Aggregate(company, myStock ?? new CurrencyElement{ ValueAbsolute = new TotalAmountCurrency() }, tickerInfo.Payload));
 }
 
 PrintAggregates(agg, "Big companies:");
@@ -112,11 +118,18 @@ static void PrintAggregates(List<Aggregate> aggs, string title)
         var myStockTargerCap = afterBuySum - restCap;
         var myDiffRub = myStockTargerCap - myStockCap;
 
-        var amountToBuy = myDiffRub / company.Price;
+        var price = agg.tickerInfo.Prices.Buy.Value;
+        var amountToBuy = myDiffRub / price / agg.tickerInfo.Symbol.LotSize;
         var amountToBuyText = amountToBuy > 0 ?
         amountToBuy >= 1000 ?
          amountToBuy >= 1000000 ? $"{amountToBuy / 1000000:0}M" : $"{amountToBuy / 1000:0}K" :
           $"{amountToBuy:0}" : "--";
+
+        var lotSize = agg.tickerInfo.Symbol.LotSize;
+        var lotSizeText = lotSize != 1 ?
+        lotSize >= 1000 ?
+         lotSize >= 1000000 ? $"{lotSize / 1000000:0}M" : $"{lotSize / 1000:0}K" :
+          $"{lotSize:0}" : string.Empty;
 
         if(myDiffRub > 0)
         {
@@ -124,7 +137,7 @@ static void PrintAggregates(List<Aggregate> aggs, string title)
           totalBuyCount++;
         }
 
-        var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myPercent:P2}\t{myDiff:+0.00%;-0.00%}\t{myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\thttps://www.tinkoff.ru/invest/stocks/{company.Ticker}\t{amountToBuyText}\t{myDiffRub:+0;-0}\t{company.Price / 1000:0.000}\t{company.Title}";
+        var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myPercent:P2}\t{myDiff:+0.00%;-0.00%}\t{myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\thttps://www.tinkoff.ru/invest/stocks/{company.Ticker}\t{amountToBuyText}\t{myDiffRub:+0;-0}\t{price / 1000:0.000}\t{lotSizeText}\t{company.Title}";
         Console.WriteLine(line);
         File.AppendAllText("output.txt", line + "\n");
     }
@@ -168,7 +181,7 @@ static void PrintCompany(Company company)
 
 public record Company(int Index, string Title, string Ticker, double Cap, double Price, double Percent, double NewPercent, double PercentDiff);
 
-public record Aggregate(Company company, CurrencyElement myStock);
+public record Aggregate(Company company, CurrencyElement myStock, Payload tickerInfo);
 
 public class CompanyComparer : IEqualityComparer<Company>
 {
