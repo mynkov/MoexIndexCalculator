@@ -86,6 +86,9 @@
 
         [JsonPropertyName("isBlockedTradeClearingAccount")]
         public bool IsBlockedTradeClearingAccount { get; set; }
+
+        [JsonPropertyName("code")]
+        public string Code { get; set; }
     }
 
     public partial class ContentMarker
