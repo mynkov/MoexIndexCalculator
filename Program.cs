@@ -14,14 +14,18 @@ var bigCompanies = await GetCompanies("https://smart-lab.ru/q/index_stocks/IMOEX
 //PrintCompanies(bigCompanies, "Big companies:");
 
 var bigAggregates = await GetAggregates(bigCompanies, checkPriviledgedStocks);
-PrintAggregates(bigAggregates, "Big companies:");
+var bigViewModels = GetViewModels(bigAggregates);
+PrintViewModels(bigViewModels.models, bigViewModels.total, "Big companies:");
 //return;
 
 
 var allCompanies = await GetCompanies("https://smart-lab.ru/q/index_stocks/MOEXBMI/order_by_issue_capitalization/desc/");
 //PrintCompanies(allCompanies, "All companies:");
 var allAggregates = await GetAggregates(allCompanies, checkPriviledgedStocks);
-PrintAggregates(allAggregates, "All companies:");
+var allViewModels = GetViewModels(allAggregates);
+PrintViewModels(allViewModels.models, allViewModels.total, "All companies:");
+
+PrintViewModels(allViewModels.models.OrderByDescending(x => x.myStock.myDiffRub), allViewModels.total, "Need to buy first:");
 
 var exceptCompanies = allCompanies.Except(bigCompanies, new CompanyComparer()).ToList();
 PrintCompanies(exceptCompanies, "Except companies:");
@@ -78,12 +82,13 @@ static async Task<List<Company>> GetCompanies(string url)
 static async Task<List<Aggregate>> GetAggregates(List<Company> companies, bool checkPriviledgedStocks)
 {
     // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
-    var text = File.ReadAllText("Stocks.json");
+    var text = File.ReadAllText("MyStocks.json");
     var stocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
 
     var result = new List<Aggregate>();
     var client = new HttpClient();
     const string searchTickerUrl = "https://www.tinkoff.ru/api/trading/stocks/get?ticker";
+
     foreach (var company in companies)
     {
         try
@@ -103,7 +108,9 @@ static async Task<List<Aggregate>> GetAggregates(List<Company> companies, bool c
             var myStock = stocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
             var tickerInfo = pTickerInfo ?? JsonSerializer.Deserialize<TickerInfo>(await client.GetStringAsync($"{searchTickerUrl}={ticker}"), QuickTypeTicker.Converter.Settings);
 
-            result.Add(new Aggregate(company, myStock ?? new CurrencyElement { ValueAbsolute = new TotalAmountCurrency() }, tickerInfo.Payload));
+            var moexInfo = await GetMoexInfo(tickerInfo.Payload.Symbol.Ticker);
+
+            result.Add(new Aggregate(company, myStock ?? new CurrencyElement { ValueAbsolute = new TotalAmountCurrency() }, tickerInfo.Payload, moexInfo));
 
         }
         catch (Exception exc)
@@ -114,31 +121,53 @@ static async Task<List<Aggregate>> GetAggregates(List<Company> companies, bool c
     return result;
 }
 
-static void PrintAggregates(List<Aggregate> aggs, string title)
+static async Task<Moex> GetMoexInfo(string ticker)
 {
-    Console.WriteLine(title);
-    Console.WriteLine();
+    const string searchMoexUrl = "https://iss.moex.com/iss/securities/{0}.jsonp?iss.meta=off&iss.json=extended&callback=JSON_CALLBACK&lang=ru&shortname=1";
+    var client = new HttpClient();
 
-    File.AppendAllText("output.txt", title + "\n\n");
+    var moexResult = await client.GetStringAsync(string.Format(searchMoexUrl, ticker));
 
+    var listing = 0;
+    if (moexResult.Contains(@"""Уровень листинга"", ""value"": ""1"""))
+    {
+        listing = 1;
+    }
+    else if (moexResult.Contains(@"""Уровень листинга"", ""value"": ""2"""))
+    {
+        listing = 2;
+    }
+    else if (moexResult.Contains(@"""Уровень листинга"", ""value"": ""3"""))
+    {
+        listing = 3;
+    }
+    else
+    {
+        listing = -1;
+    }
+    return new Moex(listing);
+}
+
+static ViewModels GetViewModels(List<Aggregate> aggs)
+{
     var myTotalCap = aggs.Sum(x => x.myStock.ValueAbsolute.Value);
     var totalBuyRub = 0.0;
     var totalBuyCount = 0;
+    var models = new List<ViewModel>();
 
     foreach (var agg in aggs)
     {
         try
         {
             var company = agg.company;
-            var symbol = agg.tickerInfo.Symbol;
+            var tickerInfo = agg.tickerInfo;
+            var symbol = tickerInfo.Symbol;
 
             var myStock = agg.myStock;
             var myStockCap = myStock.ValueAbsolute.Value;
 
             var myPercent = myStockCap / myTotalCap;
             var myDiff = company.NewPercent - myPercent;
-
-            //var myDiffRubOld = sum * myDiff;
 
             var restCap = myTotalCap - myStockCap;
             var restPercent = 1 - company.NewPercent;
@@ -147,26 +176,26 @@ static void PrintAggregates(List<Aggregate> aggs, string title)
             var myDiffRub = myStockTargerCap - myStockCap;
 
             var lotSize = symbol.LotSize;
-            var price = agg.tickerInfo.Prices.Buy?.Value ?? company.Price;
-            var amountToBuy = myDiffRub / price / lotSize;
-            var amountToBuyText = amountToBuy > 0 ?
-            amountToBuy >= 1000 ?
-             amountToBuy >= 1000000 ? $"{amountToBuy / 1000000:0}M" : $"{amountToBuy / 1000:0}K" :
-              $"{amountToBuy:0}" : "--";
-            if (agg.tickerInfo.Prices.Buy?.Currency == Currency.Usd)
+
+            var price = company.Price;
+            var buyPrice = tickerInfo.Prices.Buy?.Value;
+            var currency = tickerInfo.Prices.Buy?.Currency ?? Currency.Rub;
+            var withoutBuyPrice = false;
+
+            if (buyPrice.HasValue)
             {
-                amountToBuyText += "$";
+                if (currency == Currency.Rub)
+                {
+                    price = buyPrice.Value;
+                }
+            }
+            else
+            {
+                withoutBuyPrice = true;
             }
 
-            var lotSizeText = lotSize != 1 ?
-            lotSize >= 1000 ?
-             lotSize >= 1000000 ? $"{lotSize / 1000000:0}M" : $"{lotSize / 1000:0}K" :
-              $"{lotSize:0}" : string.Empty;
-
-            var priceText = lotSize != 1 ? $"{price / 1000:0.000}" : "    ";
-            var lotPriceText = $"{price * lotSize / 1000:0.000}";
-
-            var myDiffRubText = myDiffRub / 100 < 1 && myDiffRub / 100 > -1 ? $"{myDiffRub:+0;-0}  " : $"{myDiffRub:+0;-0}" != "-+0" ? $"{myDiffRub:+0;-0}" : "    ";
+            var amountToBuy = myDiffRub / price / lotSize;
+            var lotPrice = price * lotSize;
 
             if (myDiffRub > 0)
             {
@@ -174,10 +203,26 @@ static void PrintAggregates(List<Aggregate> aggs, string title)
                 totalBuyCount++;
             }
 
-            var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myPercent:P2}\t{myDiff:+0.00%;-0.00%}\t{myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\thttps://www.tinkoff.ru/invest/stocks/{symbol.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{company.Title}";
-            Console.WriteLine(line);
-            File.AppendAllText("output.txt", line + "\n");
+            var model = new MyStock(symbol.Ticker,
+            myStockCap,
+            myPercent,
+            myDiff,
+            amountToBuy,
+            myDiffRub,
+            lotSize,
+            lotPrice,
+            price,
+            currency,
+            symbol.Isin,
+            tickerInfo.ExchangeStatus,
+            tickerInfo.IsLowLiquid,
+            tickerInfo.RiskCategory,
+            tickerInfo.Reliable,
+            tickerInfo.Rate,
+            withoutBuyPrice,
+            agg.moex.listing);
 
+            models.Add(new ViewModel(company, model));
         }
         catch (Exception exc)
         {
@@ -185,12 +230,80 @@ static void PrintAggregates(List<Aggregate> aggs, string title)
         }
     }
 
+    return new ViewModels(models, new Total(myTotalCap, totalBuyRub, totalBuyCount));
+}
 
-    var totalCapMessage = $"\nMy total cap: {myTotalCap / 1000000:0.000}";
+static void PrintViewModels(IEnumerable<ViewModel> models, Total total, string title)
+{
+    Console.WriteLine(title);
+    Console.WriteLine();
+
+    File.AppendAllText("output.txt", title + "\n\n");
+
+
+
+    foreach (var model in models)
+    {
+        try
+        {
+            var company = model.company;
+            var myStock = model.myStock;
+
+            var amountToBuy = myStock.amountToBuy;
+            var amountToBuyText = amountToBuy > 0 ?
+            amountToBuy >= 1000 ?
+             amountToBuy >= 1000000 ? $"{amountToBuy / 1000000:0}M" : $"{amountToBuy / 1000:0}K" :
+              $"{amountToBuy:0}" : "--";
+
+            var lotSize = myStock.lotSize;
+            var lotSizeText = lotSize != 1 ?
+            lotSize >= 1000 ?
+             lotSize >= 1000000 ? $"{lotSize / 1000000:0}M" : $"{lotSize / 1000:0}K" :
+              $"{lotSize:0}" : "    ";
+
+            if (lotSizeText.Length <= 3)
+            {
+                lotSizeText += "  ";
+            }
+
+
+            var price = myStock.price;
+            var priceText = lotSize != 1 ? $"{price / 1000:0.000}" : "    ";
+            var lotPriceText = $"{price * lotSize / 1000:0.000}";
+
+            var myDiffRub = myStock.myDiffRub;
+            var myDiffRubText = myDiffRub / 100 < 1 && myDiffRub / 100 > -1 ? $"{myDiffRub:+0;-0}  " : $"{myDiffRub:+0;-0}" != "-+0" ? $"{myDiffRub:+0;-0}" : "    ";
+
+            var notRusIsinText = myStock.isin.StartsWith("RU") ? "    " : "NotRu";
+            var isLowLiquidText = myStock.isLowLiquid == false ? "    " : "BadLiq";
+            var reliableText = myStock.reliable == true ? "    " : "BadRel";
+            var riskCategoryText = myStock.riskCategory == 0 ? "     " : $"Risk{myStock.riskCategory}";
+            //var rateText = myStock.rate == 0 ? "     " : $"Rate{myStock.rate}";
+            var exchangeStatusText = myStock.exchangeStatus == "Open" ? "    " : myStock.exchangeStatus;
+            if (myStock.withoutBuyPrice)
+            {
+                exchangeStatusText += "!";
+            }
+            var currencyText = myStock.currency == Currency.Rub ? "   " : myStock.currency.ToString();
+
+            var listingText = myStock.listing == 1 ? "     " : $"List{myStock.listing}";
+
+            var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myStock.myPercent:P2}\t{myStock.myDiff:+0.00%;-0.00%}\t{myStock.myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{myStock.ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{myStock.isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{company.Title}";
+            Console.WriteLine(line);
+            File.AppendAllText("output.txt", line + "\n");
+        }
+        catch (Exception exc)
+        {
+            throw new Exception(model.company.Ticker, exc);
+        }
+    }
+
+
+    var totalCapMessage = $"\nMy total cap: {total.myTotalCap / 1000000:0.000}";
     Console.Write(totalCapMessage);
     File.AppendAllText("output.txt", totalCapMessage);
 
-    var totalBuyRubMessage = $"\nMy total buy: {totalBuyRub / 1000:0}K ({totalBuyCount}шт)";
+    var totalBuyRubMessage = $"\nMy total buy: {total.totalBuyRub / 1000:0}K ({total.totalBuyCount}шт)";
     Console.Write(totalBuyRubMessage);
     File.AppendAllText("output.txt", totalBuyRubMessage);
 
@@ -224,7 +337,17 @@ static void PrintCompany(Company company)
 
 public record Company(int Index, string Title, string Ticker, double Cap, double Price, double Percent, double NewPercent, double PercentDiff);
 
-public record Aggregate(Company company, CurrencyElement myStock, Payload tickerInfo);
+public record Aggregate(Company company, CurrencyElement myStock, Payload tickerInfo, Moex moex);
+
+public record ViewModel(Company company, MyStock myStock);
+
+public record ViewModels(List<ViewModel> models, Total total);
+
+public record MyStock(string ticker, double myStockCap, double myPercent, double myDiff, double amountToBuy, double myDiffRub, long lotSize, double lotPrice, double price, Currency currency, string isin, string exchangeStatus, bool isLowLiquid, long riskCategory, bool reliable, long rate, bool withoutBuyPrice, int listing);
+
+public record Total(double myTotalCap, double totalBuyRub, int totalBuyCount);
+
+public record Moex(int listing);
 
 public class CompanyComparer : IEqualityComparer<Company>
 {
