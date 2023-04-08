@@ -51,6 +51,8 @@ static async Task<List<Company>> GetCompanies(string url)
     var tickers = document.QuerySelectorAll("table tr td:nth-child(3) a").Select(m => m.GetAttribute("Href").Replace("/forum/", "")).ToList();
     var percents = document.QuerySelectorAll("table tr td:nth-child(4)").Select(m => m.TextContent).ToList();
     var prices = document.QuerySelectorAll("table tr td:nth-child(7)").Select(m => m.TextContent).ToList();
+    var changesMonth = document.QuerySelectorAll("table tr td:nth-child(10)").Select(m => m.TextContent).ToList();
+    var changesYear = document.QuerySelectorAll("table tr td:nth-child(11)").Select(m => m.TextContent).ToList();
     var caps = document.QuerySelectorAll("table tr td:nth-child(12)").Select(m => m.TextContent).ToList();
 
     var list = titles.Select((x, i) => new
@@ -59,7 +61,9 @@ static async Task<List<Company>> GetCompanies(string url)
         Cap = double.Parse(caps[i].Replace(" ", "")),
         Percent = double.Parse(percents[i].Replace("%", "")) / 100,
         Ticker = tickers[i],
-        Price = double.Parse(prices[i])
+        Price = double.Parse(prices[i]),
+        ChangeMonth = changesMonth[i],
+        ChangeYear = changesYear[i]
     }).ToList();
 
     var capSum = list.GroupBy(x => x.Cap).Sum(x => x.Key);
@@ -73,7 +77,9 @@ static async Task<List<Company>> GetCompanies(string url)
                 x.Last().Price,
                 x.Sum(s => s.Percent),
                 x.Key / capSum,
-                x.Key / capSum - x.Sum(s => s.Percent)
+                x.Key / capSum - x.Sum(s => s.Percent),
+                x.Last().ChangeMonth,
+                x.Last().ChangeYear
                 )).ToList();
 
     return companies;
@@ -278,7 +284,7 @@ static void PrintViewModels(IEnumerable<ViewModel> models, Total total, string t
             var isLowLiquidText = myStock.isLowLiquid == false ? "    " : "BadLiq";
             var reliableText = myStock.reliable == true ? "    " : "BadRel";
             var riskCategoryText = myStock.riskCategory == 0 ? "     " : $"Risk{myStock.riskCategory}";
-            //var rateText = myStock.rate == 0 ? "     " : $"Rate{myStock.rate}";
+
             var exchangeStatusText = myStock.exchangeStatus == "Open" ? "    " : myStock.exchangeStatus;
             if (myStock.withoutBuyPrice)
             {
@@ -288,7 +294,7 @@ static void PrintViewModels(IEnumerable<ViewModel> models, Total total, string t
 
             var listingText = myStock.listing == 1 ? "     " : $"List{myStock.listing}";
 
-            var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myStock.myPercent:P2}\t{myStock.myDiff:+0.00%;-0.00%}\t{myStock.myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{myStock.ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{myStock.isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{company.Title}";
+            var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myStock.myPercent:P2}\t{myStock.myDiff:+0.00%;-0.00%}\t{myStock.myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\t{company.changeYear}\t{company.changeMonth}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{myStock.ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{myStock.isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{company.Title}";
             Console.WriteLine(line);
             File.AppendAllText("output.txt", line + "\n");
         }
@@ -335,7 +341,7 @@ static void PrintCompany(Company company)
     File.AppendAllText("output.txt", line + "\n");
 }
 
-public record Company(int Index, string Title, string Ticker, double Cap, double Price, double Percent, double NewPercent, double PercentDiff);
+public record Company(int Index, string Title, string Ticker, double Cap, double Price, double Percent, double NewPercent, double PercentDiff, string changeMonth, string changeYear);
 
 public record Aggregate(Company company, CurrencyElement myStock, Payload tickerInfo, Moex moex);
 
