@@ -301,7 +301,7 @@
         public Guid InstrumentUid { get; set; }
     }
 
-    public enum Currency { Rub };
+    public enum Currency { Rub, Usd };
 
     internal static class Converter
     {
@@ -328,6 +328,10 @@
             {
                 return Currency.Rub;
             }
+            if (value == "USD")
+            {
+                return Currency.Usd;
+            }
             throw new Exception("Cannot unmarshal type Currency");
         }
 
@@ -336,6 +340,11 @@
             if (value == Currency.Rub)
             {
                 JsonSerializer.Serialize(writer, "RUB", options);
+                return;
+            }
+            if (value == Currency.Usd)
+            {
+                JsonSerializer.Serialize(writer, "USD", options);
                 return;
             }
             throw new Exception("Cannot marshal type Currency");

@@ -13,39 +13,15 @@ File.Delete("output.txt");
 var bigCompanies = await GetCompanies("https://smart-lab.ru/q/index_stocks/IMOEX/order_by_issue_capitalization/desc/");
 //PrintCompanies(bigCompanies, "Big companies:");
 
-// https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
-var text = File.ReadAllText("Stocks.json");
-var stocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
-
-var agg = new List<Aggregate>();
-var client = new HttpClient();
-const string searchTickerUrl = "https://www.tinkoff.ru/api/trading/stocks/get?ticker";
-foreach (var company in bigCompanies)
-{
-    TickerInfo pTickerInfo = null;
-    if (checkPriviledgedStocks)
-    {
-        var resultP = await client.GetStringAsync($"{searchTickerUrl}={company.Ticker}P");
-        pTickerInfo = JsonSerializer.Deserialize<TickerInfo>(resultP, QuickTypeTicker.Converter.Settings);
-        if (pTickerInfo.Payload.Code == "TickerNotFound")
-        {
-            pTickerInfo = null;
-        }
-    }
-
-    var ticker = pTickerInfo?.Payload.Symbol.Ticker ?? company.Ticker;
-    var myStock = stocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
-    var tickerInfo = pTickerInfo ?? JsonSerializer.Deserialize<TickerInfo>(await client.GetStringAsync($"{searchTickerUrl}={ticker}"), QuickTypeTicker.Converter.Settings);
-
-    agg.Add(new Aggregate(company, myStock ?? new CurrencyElement { ValueAbsolute = new TotalAmountCurrency() }, tickerInfo.Payload));
-}
-
-PrintAggregates(agg, "Big companies:");
-return;
+var bigAggregates = await GetAggregates(bigCompanies, checkPriviledgedStocks);
+PrintAggregates(bigAggregates, "Big companies:");
+//return;
 
 
 var allCompanies = await GetCompanies("https://smart-lab.ru/q/index_stocks/MOEXBMI/order_by_issue_capitalization/desc/");
-PrintCompanies(allCompanies, "All companies:");
+//PrintCompanies(allCompanies, "All companies:");
+var allAggregates = await GetAggregates(allCompanies, checkPriviledgedStocks);
+PrintAggregates(allAggregates, "All companies:");
 
 var exceptCompanies = allCompanies.Except(bigCompanies, new CompanyComparer()).ToList();
 PrintCompanies(exceptCompanies, "Except companies:");
@@ -99,6 +75,45 @@ static async Task<List<Company>> GetCompanies(string url)
     return companies;
 }
 
+static async Task<List<Aggregate>> GetAggregates(List<Company> companies, bool checkPriviledgedStocks)
+{
+    // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
+    var text = File.ReadAllText("Stocks.json");
+    var stocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
+
+    var result = new List<Aggregate>();
+    var client = new HttpClient();
+    const string searchTickerUrl = "https://www.tinkoff.ru/api/trading/stocks/get?ticker";
+    foreach (var company in companies)
+    {
+        try
+        {
+            TickerInfo pTickerInfo = null;
+            if (checkPriviledgedStocks)
+            {
+                var resultP = await client.GetStringAsync($"{searchTickerUrl}={company.Ticker}P");
+                pTickerInfo = JsonSerializer.Deserialize<TickerInfo>(resultP, QuickTypeTicker.Converter.Settings);
+                if (pTickerInfo.Payload.Code == "TickerNotFound")
+                {
+                    pTickerInfo = null;
+                }
+            }
+
+            var ticker = pTickerInfo?.Payload.Symbol.Ticker ?? company.Ticker;
+            var myStock = stocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
+            var tickerInfo = pTickerInfo ?? JsonSerializer.Deserialize<TickerInfo>(await client.GetStringAsync($"{searchTickerUrl}={ticker}"), QuickTypeTicker.Converter.Settings);
+
+            result.Add(new Aggregate(company, myStock ?? new CurrencyElement { ValueAbsolute = new TotalAmountCurrency() }, tickerInfo.Payload));
+
+        }
+        catch (Exception exc)
+        {
+            throw new Exception(company.Ticker, exc);
+        }
+    }
+    return result;
+}
+
 static void PrintAggregates(List<Aggregate> aggs, string title)
 {
     Console.WriteLine(title);
@@ -112,49 +127,62 @@ static void PrintAggregates(List<Aggregate> aggs, string title)
 
     foreach (var agg in aggs)
     {
-        var company = agg.company;
-        var symbol = agg.tickerInfo.Symbol;
-        var myStock = agg.myStock;
-        var myStockCap = myStock.ValueAbsolute.Value;
-
-        var myPercent = myStockCap / myTotalCap;
-        var myDiff = company.NewPercent - myPercent;
-
-        //var myDiffRubOld = sum * myDiff;
-
-        var restCap = myTotalCap - myStockCap;
-        var restPercent = 1 - company.NewPercent;
-        var afterBuySum = restCap / restPercent;
-        var myStockTargerCap = afterBuySum - restCap;
-        var myDiffRub = myStockTargerCap - myStockCap;
-
-        var lotSize = symbol.LotSize;
-        var price = agg.tickerInfo.Prices.Buy.Value;
-        var amountToBuy = myDiffRub / price / lotSize;
-        var amountToBuyText = amountToBuy > 0 ?
-        amountToBuy >= 1000 ?
-         amountToBuy >= 1000000 ? $"{amountToBuy / 1000000:0}M" : $"{amountToBuy / 1000:0}K" :
-          $"{amountToBuy:0}" : "--";
-
-
-        var lotSizeText = lotSize != 1 ?
-        lotSize >= 1000 ?
-         lotSize >= 1000000 ? $"{lotSize / 1000000:0}M" : $"{lotSize / 1000:0}K" :
-          $"{lotSize:0}" : string.Empty;
-
-        var priceText = lotSize != 1 ? $"{price / 1000:0.000}" : "    ";
-        var lotPriceText = $"{price * lotSize / 1000:0.000}";
-        var myDiffRubText = $"{myDiffRub:+0;-0}" != "-+0" ? $"{myDiffRub:+0;-0}" : "    ";
-
-        if (myDiffRub > 0)
+        try
         {
-            totalBuyRub += myDiffRub;
-            totalBuyCount++;
-        }
+            var company = agg.company;
+            var symbol = agg.tickerInfo.Symbol;
 
-        var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myPercent:P2}\t{myDiff:+0.00%;-0.00%}\t{myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\thttps://www.tinkoff.ru/invest/stocks/{symbol.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{company.Title}";
-        Console.WriteLine(line);
-        File.AppendAllText("output.txt", line + "\n");
+            var myStock = agg.myStock;
+            var myStockCap = myStock.ValueAbsolute.Value;
+
+            var myPercent = myStockCap / myTotalCap;
+            var myDiff = company.NewPercent - myPercent;
+
+            //var myDiffRubOld = sum * myDiff;
+
+            var restCap = myTotalCap - myStockCap;
+            var restPercent = 1 - company.NewPercent;
+            var afterBuySum = restCap / restPercent;
+            var myStockTargerCap = afterBuySum - restCap;
+            var myDiffRub = myStockTargerCap - myStockCap;
+
+            var lotSize = symbol.LotSize;
+            var price = agg.tickerInfo.Prices.Buy?.Value ?? company.Price;
+            var amountToBuy = myDiffRub / price / lotSize;
+            var amountToBuyText = amountToBuy > 0 ?
+            amountToBuy >= 1000 ?
+             amountToBuy >= 1000000 ? $"{amountToBuy / 1000000:0}M" : $"{amountToBuy / 1000:0}K" :
+              $"{amountToBuy:0}" : "--";
+            if (agg.tickerInfo.Prices.Buy?.Currency == Currency.Usd)
+            {
+                amountToBuyText += "$";
+            }
+
+            var lotSizeText = lotSize != 1 ?
+            lotSize >= 1000 ?
+             lotSize >= 1000000 ? $"{lotSize / 1000000:0}M" : $"{lotSize / 1000:0}K" :
+              $"{lotSize:0}" : string.Empty;
+
+            var priceText = lotSize != 1 ? $"{price / 1000:0.000}" : "    ";
+            var lotPriceText = $"{price * lotSize / 1000:0.000}";
+
+            var myDiffRubText = myDiffRub / 100 < 1 && myDiffRub / 100 > -1 ? $"{myDiffRub:+0;-0}  " : $"{myDiffRub:+0;-0}" != "-+0" ? $"{myDiffRub:+0;-0}" : "    ";
+
+            if (myDiffRub > 0)
+            {
+                totalBuyRub += myDiffRub;
+                totalBuyCount++;
+            }
+
+            var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myPercent:P2}\t{myDiff:+0.00%;-0.00%}\t{myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\thttps://www.tinkoff.ru/invest/stocks/{symbol.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{company.Title}";
+            Console.WriteLine(line);
+            File.AppendAllText("output.txt", line + "\n");
+
+        }
+        catch (Exception exc)
+        {
+            throw new Exception(agg.company.Ticker, exc);
+        }
     }
 
 
