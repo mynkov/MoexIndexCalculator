@@ -294,7 +294,13 @@ static void PrintViewModels(IEnumerable<ViewModel> models, Total total, string t
 
             var listingText = myStock.listing == 1 ? "     " : $"List{myStock.listing}";
 
-            var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myStock.myPercent:P2}\t{myStock.myDiff:+0.00%;-0.00%}\t{myStock.myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\t{company.changeYear}\t{company.changeMonth}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{myStock.ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{myStock.isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{company.Title}";
+            var changeMonth = company.changeMonth;
+            var changeMonthText = changeMonth == "0" ? "0   " : changeMonth == string.Empty ? "     " : changeMonth;
+
+            var changeYear = company.changeYear;
+            var changeYearText = changeYear == "0" ? "0   " : changeYear == string.Empty ? "     " : changeYear;
+
+            var line = $"{company.Index}\t{company.NewPercent:P2}\t\t{myStock.myPercent:P2}\t{myStock.myDiff:+0.00%;-0.00%}\t{myStock.myStockCap / 1000:0}\t\t{company.Percent:P2}\t{company.PercentDiff:+0.00%;-0.00%}\t\t{company.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{myStock.ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{myStock.isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{company.Title}";
             Console.WriteLine(line);
             File.AppendAllText("output.txt", line + "\n");
         }
