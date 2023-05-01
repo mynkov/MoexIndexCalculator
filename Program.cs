@@ -58,7 +58,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url)
     var list = titles.Select((x, i) => new
     {
         Title = x,
-        Cap = double.Parse(caps[i].Replace(" ", "")),
+        Cap = !string.IsNullOrWhiteSpace(caps[i]) ? double.Parse(caps[i].Replace(" ", "")) : 0,
         Percent = double.Parse(percents[i].Replace("%", "")) / 100,
         Ticker = tickers[i],
         Price = double.Parse(prices[i]),
@@ -191,7 +191,7 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
             var lotSize = tinkoffSymbol.LotSize;
             var price = smartLabInfo.Price;
             var currency = tinkoffTickerInfo.Prices.Buy?.Currency ?? Currency.Rub;
-            
+
             var tinkoffInfo = new TinkoffInfo(
             tinkoffSymbol.Ticker,
             lotSize,
