@@ -116,7 +116,7 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
     {
         try
         {
-            // if(smartLabInfo.Ticker == "ISKJ")
+            // if(smartLabInfo.Ticker == "ISKJ") 
             // {
             //     continue;
             // }
