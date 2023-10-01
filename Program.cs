@@ -43,14 +43,26 @@ PrintSmartLabInfos(allSmartLabStocks.Where(x => Math.Abs(x.PercentDiff) >= 0.005
 
 Console.ReadLine();
 
-static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url)
+static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile = false)
 {
-    var document = await BrowsingContext.New(Configuration.Default.WithDefaultLoader()).OpenAsync(url);
+    var cookie = "_fz_fvdt=1608457937; _ym_uid=1608457938504410383; _fz_uniq=723481060741648593; visitor_id=01685d734d5d81667ed2b560ad0a5aa7; _ym_d=1673781191; _count_uid=d1681243947658431qrfzbfl4asgmlgp16r65jkmheb4ngcjo; cf_chl_2=a541ea4fdfa5476; cf_clearance=ZWAv_bIJCfe91SiVW1VG5WyZoAjCMrnzgqnRDq_HyOo-1687099946-0-160; _fz_ssn=1687099951178556055; _gid=GA1.2.876455185.1687099951; _ym_isad=1; PHPSESSID=6b7a899646c08454c7e037c43e681418; _ga_CWV8L1544Z=GS1.1.1687099951.1.1.1687100220.0.0.0; _ga=GA1.1.1569066822.1673781191";
+    var cookies = new AngleSharp.Io.MemoryCookieProvider();
+    cookies.SetCookie(new AngleSharp.Dom.Url(url), cookie);
 
-    var titles = document.QuerySelectorAll("table tr td:nth-child(3)").Select(m => m.TextContent).ToList();
-    var tickers = document.QuerySelectorAll("table tr td:nth-child(3) a").Select(m => m.GetAttribute("Href").Replace("/forum/", "")).ToList();
-    var percents = document.QuerySelectorAll("table tr td:nth-child(4)").Select(m => m.TextContent).ToList();
-    var prices = document.QuerySelectorAll("table tr td:nth-child(7)").Select(m => m.TextContent).ToList();
+    // var client = new HttpClient();
+    // client.DefaultRequestHeaders.Add("Cookie", cookie);
+    // var tr = await new HttpClient().PostAsync(url, null);
+    // var tr1 = await tr.Content.ReadAsStringAsync();
+
+    var html = fromFile ? File.ReadAllText(url.Replace("https://smart-lab.ru/q/index_stocks/", string.Empty).Replace("/order_by_issue_capitalization/desc/", string.Empty) + ".html") : null;
+    var document = fromFile 
+     ? await BrowsingContext.New(Configuration.Default.WithDefaultLoader()).OpenAsync(req => req.Content(html))
+     : await BrowsingContext.New(Configuration.Default.WithDefaultLoader().With(cookies)).OpenAsync(url);
+
+    var titles = document.QuerySelectorAll("table tr td:nth-child(2)").Select(m => m.TextContent).ToList();
+    var tickers = document.QuerySelectorAll("table tr td:nth-child(2) a").Select(m => m.GetAttribute("Href").Replace("/forum/", "")).ToList();
+    var percents = document.QuerySelectorAll("table tr td:nth-child(3)").Select(m => m.TextContent).ToList();
+    var prices = document.QuerySelectorAll("table tr td:nth-child(6)").Select(m => m.TextContent).ToList();
     var changesMonth = document.QuerySelectorAll("table tr td:nth-child(10)").Select(m => m.TextContent).ToList();
     var changesYear = document.QuerySelectorAll("table tr td:nth-child(11)").Select(m => m.TextContent).ToList();
     var caps = document.QuerySelectorAll("table tr td:nth-child(12)").Select(m => m.TextContent).ToList();
@@ -82,6 +94,11 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url)
                 x.Last().ChangeYear
                 )).ToList();
 
+    if(companies.Count == 0)
+    {
+        return await GetSmartLabInfos(url, true);
+    }
+
     return companies;
 }
 
@@ -99,6 +116,10 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
     {
         try
         {
+            // if(smartLabInfo.Ticker == "ISKJ")
+            // {
+            //     continue;
+            // }
             TickerInfo tinkoffPrefTickerInfo = null;
             if (checkPriviledgedStocks)
             {
