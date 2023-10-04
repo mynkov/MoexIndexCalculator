@@ -116,11 +116,11 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
     {
         try
         {
-             if(smartLabInfo.Ticker == "ISKJ")
-             {
-                 continue;
-             }
-             
+            //  if(smartLabInfo.Ticker == "ISKJ")
+            //  {
+            //      continue;
+            //  }
+
             TickerInfo tinkoffPrefTickerInfo = null;
             if (checkPriviledgedStocks)
             {
