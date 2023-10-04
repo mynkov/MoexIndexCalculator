@@ -83,7 +83,7 @@
         public double Value { get; set; }
     }
 
-    public enum PositionType { Etf, Stock, Currency };
+    public enum PositionType { Etf, Stock, Currency, Bond };
 
     public enum CurrencyEnum { Rub };
 
@@ -117,8 +117,10 @@
                     return PositionType.Stock;
                 case "currency":
                     return PositionType.Currency;  
+                case "bond":
+                    return PositionType.Bond;  
             }
-            throw new Exception("Cannot unmarshal type PositionType");
+            throw new Exception($"Cannot unmarshal type PositionType {value}");
         }
 
         public override void Write(Utf8JsonWriter writer, PositionType value, JsonSerializerOptions options)
@@ -133,6 +135,9 @@
                     return;
                 case PositionType.Currency:
                     JsonSerializer.Serialize(writer, "currency", options);
+                    return;
+                case PositionType.Bond:
+                    JsonSerializer.Serialize(writer, "bond", options);
                     return;
             }
             throw new Exception("Cannot marshal type PositionType");
