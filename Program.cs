@@ -166,7 +166,7 @@ static async Task<double> GetLastYearDividend(string ticker, string prefTicker)
         {
             var dividentPaymentDateText = dividendRow.Children[1].TextContent;
             var dividendPaymentDate = DateTime.ParseExact(dividentPaymentDateText, "dd.MM.yyyy", null);
-            if (dividendPaymentDate > DateTime.Now.AddYears(-1))
+            if (dividendPaymentDate > DateTime.Now.AddYears(-1) && dividendPaymentDate <= DateTime.Now)
             {
                 var dividendText = dividendRow.Children[4].Children.First().TextContent;
                 var dividend = double.Parse(dividendText.Replace(",", "."));
