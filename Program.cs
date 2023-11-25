@@ -78,6 +78,42 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeYear = changesYear[i]
     }).ToList();
 
+    // list.Add(new
+    // {
+    //     Title = "Газпром нефть",
+    //     Cap = 4000.0,
+    //     Percent = 0.0,
+    //     Ticker = "SIBN",
+    //     Price = 0.0,
+    //     ChangeMonth = "0.0%",
+    //     ChangeYear = "0.0%"
+    // });
+
+    // list.Add(new
+    // {
+    //     Title = "ПАО Яковлев (Иркут)",
+    //     Cap = 645.0,
+    //     Percent = 0.0,
+    //     Ticker = "IRKT",
+    //     Price = 0.0,
+    //     ChangeMonth = "0.0%",
+    //     ChangeYear = "0.0%"
+    // }); 
+
+    // list.Add(new
+    // {
+    //     Title = "ОАК",
+    //     Cap = 457.0,
+    //     Percent = 0.0,
+    //     Ticker = "UNAC",
+    //     Price = 0.0,
+    //     ChangeMonth = "0.0%",
+    //     ChangeYear = "0.0%"
+    // });
+    
+
+    list = list.OrderByDescending(x => x.Cap).ToList();  
+
     var capSum = list.GroupBy(x => x.Cap).Sum(x => x.Key);
 
     var companies = list.GroupBy(x => x.Cap).Select((x, i) => new
@@ -166,7 +202,8 @@ static async Task<double> GetLastYearDividend(string ticker, string prefTicker)
         {
             var dividentPaymentDateText = dividendRow.Children[1].TextContent;
             var dividendPaymentDate = DateTime.ParseExact(dividentPaymentDateText, "dd.MM.yyyy", null);
-            if (dividendPaymentDate > DateTime.Now.AddYears(-1) && dividendPaymentDate <= DateTime.Now)
+            var now = DateTime.Now;
+            if (dividendPaymentDate > now.AddYears(-1) && dividendPaymentDate <= now)
             {
                 var dividendText = dividendRow.Children[4].Children.First().TextContent;
                 var dividend = double.Parse(dividendText.Replace(",", "."));
