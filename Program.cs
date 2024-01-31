@@ -92,7 +92,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
     // list.Add(new
     // {
     //     Title = "ПАО Яковлев (Иркут)",
-    //     Cap = 645.0,
+    //     Cap = 121.0,
     //     Percent = 0.0,
     //     Ticker = "IRKT",
     //     Price = 0.0,
@@ -103,7 +103,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
     // list.Add(new
     // {
     //     Title = "ОАК",
-    //     Cap = 457.0,
+    //     Cap = 745.0,
     //     Percent = 0.0,
     //     Ticker = "UNAC",
     //     Price = 0.0,
@@ -158,7 +158,7 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
             }
 
             TickerInfo tinkoffPrefTickerInfo = null;
-            if (checkPriviledgedStocks && smartLabInfo.Ticker != "BSPB")
+            if (checkPriviledgedStocks && smartLabInfo.Ticker != "BSPB" && smartLabInfo.Ticker != "SELG")
             {
                 var resultPref = await client.GetStringAsync($"{searchTickerUrl}={smartLabInfo.Ticker}P");
                 tinkoffPrefTickerInfo = JsonSerializer.Deserialize<TickerInfo>(resultPref, QuickTypeTicker.Converter.Settings);
@@ -201,6 +201,9 @@ static async Task<double> GetLastYearDividend(string ticker, string prefTicker)
         if (tickerFromRow == searchTicker)
         {
             var dividentPaymentDateText = dividendRow.Children[1].TextContent;
+            if(string.IsNullOrWhiteSpace(dividentPaymentDateText))
+                continue;
+
             var dividendPaymentDate = DateTime.ParseExact(dividentPaymentDateText, "dd.MM.yyyy", null);
             var now = DateTime.Now;
             if (dividendPaymentDate > now.AddYears(-1) && dividendPaymentDate <= now)
