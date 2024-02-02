@@ -78,38 +78,38 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeYear = changesYear[i]
     }).ToList();
 
-    // list.Add(new
-    // {
-    //     Title = "Газпром нефть",
-    //     Cap = 4000.0,
-    //     Percent = 0.0,
-    //     Ticker = "SIBN",
-    //     Price = 0.0,
-    //     ChangeMonth = "0.0%",
-    //     ChangeYear = "0.0%"
-    // });
+    list.Add(new
+    {
+        Title = "Газпром нефть",
+        Cap = await GetCapFromSmartLab("SIBN"),
+        Percent = 0.0,
+        Ticker = "SIBN",
+        Price = 0.0,
+        ChangeMonth = "0.0%",
+        ChangeYear = "0.0%"
+    });
 
-    // list.Add(new
-    // {
-    //     Title = "ПАО Яковлев (Иркут)",
-    //     Cap = 121.0,
-    //     Percent = 0.0,
-    //     Ticker = "IRKT",
-    //     Price = 0.0,
-    //     ChangeMonth = "0.0%",
-    //     ChangeYear = "0.0%"
-    // }); 
+    list.Add(new
+    {
+        Title = "ПАО Яковлев (Иркут)",
+        Cap = await GetCapFromSmartLab("IRKT"),
+        Percent = 0.0,
+        Ticker = "IRKT",
+        Price = 0.0,
+        ChangeMonth = "0.0%",
+        ChangeYear = "0.0%"
+    }); 
 
-    // list.Add(new
-    // {
-    //     Title = "ОАК",
-    //     Cap = 745.0,
-    //     Percent = 0.0,
-    //     Ticker = "UNAC",
-    //     Price = 0.0,
-    //     ChangeMonth = "0.0%",
-    //     ChangeYear = "0.0%"
-    // });
+    list.Add(new
+    {
+        Title = "ОАК",
+        Cap = await GetCapFromSmartLab("UNAC"),
+        Percent = 0.0,
+        Ticker = "UNAC",
+        Price = 0.0,
+        ChangeMonth = "0.0%",
+        ChangeYear = "0.0%"
+    });
     
 
     list = list.OrderByDescending(x => x.Cap).ToList();  
@@ -138,6 +138,17 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
     return companies;
 }
 
+static async Task<double> GetCapFromSmartLab(string ticker)
+{
+    string url = $"https://smart-lab.ru/q/{ticker}/f/y/";
+    var htmlDocument = await BrowsingContext.New(Configuration.Default.WithDefaultLoader()).OpenAsync(url);
+
+    var cap = htmlDocument.QuerySelector("tr[field='market_cap'] td:last-child");
+    var text = cap.InnerHtml.Replace(" ", string.Empty).Replace("\t", string.Empty);
+    var value = double.Parse(text);
+    return value;
+}
+
 static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks, bool checkPriviledgedStocks)
 {
     // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
@@ -158,7 +169,7 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
             }
 
             TickerInfo tinkoffPrefTickerInfo = null;
-            if (checkPriviledgedStocks && smartLabInfo.Ticker != "BSPB" && smartLabInfo.Ticker != "SELG")
+            if (checkPriviledgedStocks && smartLabInfo.Ticker != "BSPB")
             {
                 var resultPref = await client.GetStringAsync($"{searchTickerUrl}={smartLabInfo.Ticker}P");
                 tinkoffPrefTickerInfo = JsonSerializer.Deserialize<TickerInfo>(resultPref, QuickTypeTicker.Converter.Settings);
@@ -413,7 +424,9 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
             var dividendYieldText = allInfoView.DividendInfo.DividendYield > 0 ? $"{allInfoView.DividendInfo.DividendYield:P2}" : "     ";
             var dividendWeightedText = allInfoView.DividendInfo.DividendWeighted > 0 ? $"{allInfoView.DividendInfo.DividendWeighted:P2}" : "     ";
 
-            var line = $"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStock.MyStockCap / 1000:0}\t\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t{smartLabInfo.Title}";
+            var myStockCapText = myStock.MyStockCap >= 1000000 ? $"{myStock.MyStockCap / 1000:0}" : $"{myStock.MyStockCap / 1000:0}\t";
+
+            var line = $"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t{smartLabInfo.Title}";
             Console.WriteLine(line);
             File.AppendAllText("output.txt", line + "\n");
         }
