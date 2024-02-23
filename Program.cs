@@ -71,9 +71,9 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
     {
         Title = x,
         Cap = !string.IsNullOrWhiteSpace(caps[i]) ? double.Parse(caps[i].Replace(" ", "")) : 0,
-        Percent = double.Parse(percents[i].Replace("%", "")) / 100,
+        Percent = !string.IsNullOrWhiteSpace(percents[i]) ? double.Parse(percents[i].Replace("%", "")) / 100 : 0,
         Ticker = tickers[i],
-        Price = double.Parse(prices[i]),
+        Price = !string.IsNullOrWhiteSpace(prices[i]) ? double.Parse(prices[i]) : 0,
         ChangeMonth = changesMonth[i],
         ChangeYear = changesYear[i]
     }).ToList();
@@ -88,7 +88,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeMonth = "0.0%",
         ChangeYear = "0.0%"
     });
-
+/*
     list.Add(new
     {
         Title = "ПАО Яковлев (Иркут)",
@@ -110,7 +110,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeMonth = "0.0%",
         ChangeYear = "0.0%"
     });
-
+ */
 
     list = list.OrderByDescending(x => x.Cap).ToList();
 
