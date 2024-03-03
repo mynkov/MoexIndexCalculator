@@ -1,11 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using AngleSharp;
 using AngleSharp.Common;
-using AngleSharp.Dom;
 using QuickType;
 using QuickTypeTicker;
 
@@ -20,7 +17,6 @@ var bigSmartLabStocks = await GetSmartLabInfos("https://smart-lab.ru/q/index_sto
 
 var bigAggregates = await GetAggregates(bigSmartLabStocks, checkPriviledgedStocks);
 var bigAllInfoViews = GetAllInfoViews(bigAggregates);
-
 PrintAllInfoViews(bigAllInfoViews.AllInfos, bigAllInfoViews.Total, "Big companies:");
 //return;
 
@@ -48,7 +44,6 @@ PrintSmartLabInfos(exceptCompanies.Select(x =>
 
 PrintSmartLabInfos(bigSmartLabStocks.Where(x => Math.Abs(x.PercentDiff) >= 0.005).OrderByDescending(x => x.PercentDiff).ToList(), "Big companies percent diff:");
 PrintSmartLabInfos(allSmartLabStocks.Where(x => Math.Abs(x.PercentDiff) >= 0.005).OrderByDescending(x => x.PercentDiff).ToList(), "All companies percent diff:");
-
 
 Console.ReadLine();
 
