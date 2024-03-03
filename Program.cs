@@ -243,7 +243,7 @@ void PrintForwardYearDividends(List<AllInfoView> allInfos)
 
     foreach (var divs in groupByMonth)
     {
-        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.Item2) * 0.87 / 1000:0.0}k\t\t{string.Join("\t\t", divs.OrderByDescending(x => x.Item2).Select(x => $"{x.Item1.Day} {x.Ticker} {x.Item2 * 0.87 / 1000:0.0}k"))}";
+        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.Item2) * 0.87 / 1000:0.0}k";
         Console.Write(monthDivMessage);
         File.AppendAllText("output.txt", monthDivMessage);
     }
@@ -252,6 +252,16 @@ void PrintForwardYearDividends(List<AllInfoView> allInfos)
     var totalMessage = $"\n\n{total / 1000:0}k per year, {total / 12 / 1000:0.0}k per month\n\n";
     Console.Write(totalMessage);
     File.AppendAllText("output.txt", totalMessage);
+
+    foreach (var divs in groupByMonth)
+    {
+        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.Item2) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.OrderByDescending(x => x.Item2).Select(x => $"\t\t\t\t{x.Item1.Day}\t{x.Ticker}\t{x.Item2 * 0.87 / 1000:0.0}k"))}";
+        Console.Write(monthDivMessage);
+        File.AppendAllText("output.txt", monthDivMessage);
+    }
+
+    Console.Write("\n\n");
+    File.AppendAllText("output.txt", "\n\n");
 }
 
 static async Task<double> GetLastYearDividend(string ticker, string prefTicker)
