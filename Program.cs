@@ -219,9 +219,6 @@ static async Task<ForecastDividend> GetForecastDividend(string ticker)
         var dividendText = dividendRow.Children[3].InnerHtml;
         var dividend = double.Parse(dividendText.Split(" ").First());
 
-        if (ticker == "TRNFP")
-            dividend = dividend / 100;
-
         if(dividend != 0)
             divs.Add((dividendPaymentDate, dividend));
     }
@@ -229,10 +226,6 @@ static async Task<ForecastDividend> GetForecastDividend(string ticker)
     var sumDiv = 0.0;
 
     double.TryParse(forecastYearDividend?.InnerHtml, out sumDiv);
-
-    if (ticker == "TRNFP")
-        sumDiv = sumDiv / 100;
-
     return new ForecastDividend(sumDiv, divs);
 }
 
