@@ -6,6 +6,7 @@ using AngleSharp.Common;
 using QuickType;
 using QuickTypeTicker;
 
+var watch = System.Diagnostics.Stopwatch.StartNew();
 var checkPriviledgedStocks = true;
 File.Delete("output.txt");
 
@@ -15,9 +16,9 @@ File.Delete("output.txt");
 var bigSmartLabStocks = await GetSmartLabInfos("https://smart-lab.ru/q/index_stocks/IMOEX/order_by_issue_capitalization/desc/");
 //PrintCompanies(bigCompanies, "Big companies:");
 
-var bigAggregates = await GetAggregates(bigSmartLabStocks, checkPriviledgedStocks);
-var bigAllInfoViews = GetAllInfoViews(bigAggregates);
-PrintAllInfoViews(bigAllInfoViews.AllInfos, bigAllInfoViews.Total, "Big companies:");
+//var bigAggregates = await GetAggregates(bigSmartLabStocks, checkPriviledgedStocks);
+//var bigAllInfoViews = GetAllInfoViews(bigAggregates);
+//PrintAllInfoViews(bigAllInfoViews.AllInfos, bigAllInfoViews.Total, "Big companies:");
 //return;
 
 
@@ -45,19 +46,15 @@ PrintSmartLabInfos(exceptCompanies.Select(x =>
 PrintSmartLabInfos(bigSmartLabStocks.Where(x => Math.Abs(x.PercentDiff) >= 0.005).OrderByDescending(x => x.PercentDiff).ToList(), "Big companies percent diff:");
 PrintSmartLabInfos(allSmartLabStocks.Where(x => Math.Abs(x.PercentDiff) >= 0.005).OrderByDescending(x => x.PercentDiff).ToList(), "All companies percent diff:");
 
+watch.Stop();
+var executionTimeMessage = $"\n\nExecution time: {watch.ElapsedMilliseconds}ms";
+Console.WriteLine(executionTimeMessage);
+File.AppendAllText("output.txt", executionTimeMessage);
+
 Console.ReadLine();
 
 static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile = false)
 {
-    // var cookie = "_fz_fvdt=1608457937; _ym_uid=1608457938504410383; _fz_uniq=723481060741648593; visitor_id=01685d734d5d81667ed2b560ad0a5aa7; _ym_d=1673781191; _count_uid=d1681243947658431qrfzbfl4asgmlgp16r65jkmheb4ngcjo; cf_chl_2=a541ea4fdfa5476; cf_clearance=ZWAv_bIJCfe91SiVW1VG5WyZoAjCMrnzgqnRDq_HyOo-1687099946-0-160; _fz_ssn=1687099951178556055; _gid=GA1.2.876455185.1687099951; _ym_isad=1; PHPSESSID=6b7a899646c08454c7e037c43e681418; _ga_CWV8L1544Z=GS1.1.1687099951.1.1.1687100220.0.0.0; _ga=GA1.1.1569066822.1673781191";
-    // var cookies = new AngleSharp.Io.MemoryCookieProvider();
-    // cookies.SetCookie(new AngleSharp.Dom.Url(url), cookie);
-
-    // var client = new HttpClient();
-    // client.DefaultRequestHeaders.Add("Cookie", cookie);
-    // var tr = await new HttpClient().PostAsync(url, null);
-    // var tr1 = await tr.Content.ReadAsStringAsync();
-
     var html = fromFile ? File.ReadAllText(url.Replace("https://smart-lab.ru/q/index_stocks/", string.Empty).Replace("/order_by_issue_capitalization/desc/", string.Empty) + ".html") : null;
     var document = fromFile
      ? await BrowsingContext.New(Configuration.Default.WithDefaultLoader()).OpenAsync(req => req.Content(html))
@@ -187,10 +184,9 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
             var myStock = myStocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
             var tinkoffTickerInfo = tinkoffPrefTickerInfo ?? JsonSerializer.Deserialize<TickerInfo>(await client.GetStringAsync($"{searchTickerUrl}={ticker}"), QuickTypeTicker.Converter.Settings);
             var moexInfo = await GetMoexInfo(tinkoffTickerInfo.Payload.Symbol.Ticker);
-            var lastYearDividend = await GetLastYearDividend(smartLabInfo.Ticker, tinkoffPrefTickerInfo?.Payload.Symbol.Ticker);
-            var forecastDividend = await GetForecastDividend(ticker);
+            var dohodDividends = await GetDohodDividends(ticker);
 
-            result.Add(new AllInfo(smartLabInfo, myStock?.ValueAbsolute.Value ?? 0.0, tinkoffTickerInfo.Payload, moexInfo, lastYearDividend, forecastDividend));
+            result.Add(new AllInfo(smartLabInfo, myStock?.ValueAbsolute.Value ?? 0.0, tinkoffTickerInfo.Payload, moexInfo, dohodDividends));
 
         }
         catch (Exception exc)
@@ -201,17 +197,19 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
     return result;
 }
 
-static async Task<ForecastDividend> GetForecastDividend(string ticker)
+static async Task<DohodDividends> GetDohodDividends(string ticker)
 {
     string url = $"https://www.dohod.ru/ik/analytics/dividend/";
     var htmlDocument = await BrowsingContext.New(Configuration.Default.WithDefaultLoader()).OpenAsync(url + ticker.ToLower());
 
     var forecastYearDividend = htmlDocument.QuerySelector("tr[class='forecast'] td[class='black11']");
-    var dividends = htmlDocument.QuerySelectorAll("table[class='content-table']:nth-of-type(3) tr[class='forecast']");
+    var forecastDividendsItems = htmlDocument.QuerySelectorAll("table[class='content-table']:nth-of-type(3) tr[class='forecast']");
+    var dividendItems = htmlDocument.QuerySelectorAll("table[class='content-table']:nth-of-type(3) tr[class!='forecast']");
 
-    var divs = new List<(DateTime, double)>();
+    var forecastDividends = new List<(DateTime, double)>();
+    var dividends = new List<(DateTime, double)>();
 
-    foreach (var dividendRow in dividends)
+    foreach (var dividendRow in forecastDividendsItems)
     {
         var dateText = dividendRow.Children[1].InnerHtml;
         var dividendPaymentDate = DateTime.ParseExact(dateText.Split(" ").First(), "dd.MM.yyyy", null);
@@ -220,13 +218,25 @@ static async Task<ForecastDividend> GetForecastDividend(string ticker)
         var dividend = double.Parse(dividendText.Split(" ").First());
 
         if(dividend != 0)
-            divs.Add((dividendPaymentDate, dividend));
+            forecastDividends.Add((dividendPaymentDate, dividend));
+    }
+
+    foreach (var dividendRow in dividendItems.Skip(1))
+    {
+        var dateText = dividendRow.Children[1].InnerHtml;
+        var dividendPaymentDate = DateTime.ParseExact(dateText, "dd.MM.yyyy", null);
+
+        var dividendText = dividendRow.Children[3].InnerHtml;
+        var dividend = double.Parse(dividendText);
+
+        if(dividend != 0)
+            dividends.Add((dividendPaymentDate, dividend));
     }
 
     var sumDiv = 0.0;
 
     double.TryParse(forecastYearDividend?.InnerHtml, out sumDiv);
-    return new ForecastDividend(sumDiv, divs);
+    return new DohodDividends(sumDiv, forecastDividends, dividends);
 }
 
 void PrintForwardYearDividends(List<AllInfoView> allInfos)
@@ -255,40 +265,6 @@ void PrintForwardYearDividends(List<AllInfoView> allInfos)
 
     Console.Write("\n\n");
     File.AppendAllText("output.txt", "\n\n");
-}
-
-static async Task<double> GetLastYearDividend(string ticker, string prefTicker)
-{
-    string url = $"https://smart-lab.ru/q/{ticker}/dividend/";
-    var htmlDocument = await BrowsingContext.New(Configuration.Default.WithDefaultLoader()).OpenAsync(url);
-
-    var dividendRows = htmlDocument.QuerySelectorAll("table[class='simple-little-table financials dividends sort-table'] tr");
-
-    double lastYearDividend = 0.0;
-
-    foreach (var dividendRow in dividendRows)
-    {
-        var tickerFromRow = dividendRow.Children.First().TextContent;
-        var searchTicker = prefTicker ?? ticker;
-        if (tickerFromRow == searchTicker)
-        {
-            var dividentPaymentDateText = dividendRow.Children[1].TextContent;
-            if (string.IsNullOrWhiteSpace(dividentPaymentDateText))
-                continue;
-
-            var dividendPaymentDate = DateTime.ParseExact(dividentPaymentDateText, "dd.MM.yyyy", null);
-            var now = DateTime.Now;
-            if (dividendPaymentDate > now.AddYears(-1) && dividendPaymentDate <= now)
-            {
-                var dividendText = dividendRow.Children[4].Children.First().TextContent;
-                var dividend = double.Parse(dividendText.Replace(",", "."));
-                lastYearDividend += dividend;
-            }
-        }
-    }
-    if (ticker == "TRNFP")
-        lastYearDividend = lastYearDividend / 100;
-    return lastYearDividend;
 }
 
 static async Task<MoexInfo> GetMoexInfo(string ticker)
@@ -396,7 +372,8 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
             price,
             withoutBuyPrice);
 
-            var lastYearDividend = allInfo.LastYearDividend;
+            var now = DateTime.Now;
+            var lastYearDividend = allInfo.DohodDividends.Dividends.Where(x => x.Item1 > now.AddYears(-1) && x.Item1 <= now).Sum(x => x.Item2);
             var dividendYield = lastYearDividend / price;
             var dividendWeighted = smartLabInfo.NewPercent * dividendYield;
 
@@ -404,8 +381,8 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
 
 
             var myStocksCount = myStockCap / price;
-            var allForecastDividends = allInfo.ForecastDividend.ForwardYearDividend * myStocksCount;
-            var forecastYield = allInfo.ForecastDividend.ForwardYearDividend / price;
+            var allForecastDividends = allInfo.DohodDividends.ForwardYearDividend * myStocksCount;
+            var forecastYield = allInfo.DohodDividends.ForwardYearDividend / price;
             totalForecastDividendPayment += allForecastDividends;
 
 
@@ -413,10 +390,10 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
                 lastYearDividend,
                 dividendYield,
                 dividendWeighted,
-                allInfo.ForecastDividend.ForwardYearDividend,
+                allInfo.DohodDividends.ForwardYearDividend,
                 allForecastDividends,
                 forecastYield,
-                allInfo.ForecastDividend.Dividends.Select(x => (x.Item1, x.Item2 * myStocksCount)).ToList());
+                allInfo.DohodDividends.ForecastDividends.Select(x => (x.Item1, x.Item2 * myStocksCount)).ToList());
 
             models.Add(new AllInfoView(smartLabInfo, myStock, tinkoffInfo, allInfo.MoexInfo, calculatedInfo, dividendInfo));
         }
@@ -435,6 +412,10 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
     Console.WriteLine();
 
     File.AppendAllText("output.txt", title + "\n\n");
+
+    var header = $"Idx\tTarget p\tMy p\tDiff p\tMy cap\tSmart p\tS diff p\tCap\t\tCh year\tCh mon\tYield\tYield f\tStatus\tTicker\t\t\t\t\t\t\t\t\t\tBuy\tDiff ru\tLot p\tPrice\tSize\tIsin\t\t\tNot ru\t$\tLiquid\tListing\tRisk\tRelia\tDiv y\tDiv w\t\tDiv st\tD f\tTitle";
+    Console.WriteLine(header);
+    File.AppendAllText("output.txt", header + "\n");
 
 
     foreach (var allInfoView in allInfoViews)
@@ -560,7 +541,7 @@ static void PrintSmartLabInfo(SmartLabInfo smartLabInfo)
 
 public record SmartLabInfo(int Index, string Title, string Ticker, double Cap, double Price, double Percent, double NewPercent, double PercentDiff, string changeMonth, string changeYear);
 
-public record AllInfo(SmartLabInfo SmartLabInfo, double MyStockCap, Payload TinkoffInfoPayload, MoexInfo MoexInfo, double LastYearDividend, ForecastDividend ForecastDividend);
+public record AllInfo(SmartLabInfo SmartLabInfo, double MyStockCap, Payload TinkoffInfoPayload, MoexInfo MoexInfo, DohodDividends DohodDividends);
 
 public record AllInfoView(SmartLabInfo SmartLabInfo, MyStock MyStock, TinkoffInfo TinkoffInfo, MoexInfo MoexInfo, CalculatedInfo CalculatedInfo, DividendInfo DividendInfo);
 
@@ -578,7 +559,7 @@ public record MoexInfo(int Listing);
 
 public record DividendInfo(double LastYearDividend, double DividendYield, double DividendWeighted, double ForecastDividendOnStock, double ForecastYearDividends, double ForecastYield, List<(DateTime, double)> ForecastDividents);
 
-public record ForecastDividend(double ForwardYearDividend, List<(DateTime, double)> Dividends);
+public record DohodDividends(double ForwardYearDividend, List<(DateTime, double)> ForecastDividends, List<(DateTime, double)> Dividends);
 
 public class SmartLabInfoComparer : IEqualityComparer<SmartLabInfo>
 {
