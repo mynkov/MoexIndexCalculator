@@ -206,7 +206,7 @@ static async Task<DohodDividends> GetDohodDividends(string ticker)
     var forecastDividendsItems = htmlDocument.QuerySelectorAll("table[class='content-table']:nth-of-type(3) tr[class='forecast']");
     var dividendItems = htmlDocument.QuerySelectorAll("table[class='content-table']:nth-of-type(3) tr[class!='forecast']");
 
-    var forecastDividends = new List<(DateTime, double)>();
+    var forecastDividends = new List<(DateTime, double, bool)>();
     var dividends = new List<(DateTime, double)>();
 
     foreach (var dividendRow in forecastDividendsItems)
@@ -217,8 +217,10 @@ static async Task<DohodDividends> GetDohodDividends(string ticker)
         var dividendText = dividendRow.Children[3].InnerHtml;
         var dividend = double.Parse(dividendText.Split(" ").First());
 
+        var isForecast = dateText.Split(" ", StringSplitOptions.RemoveEmptyEntries).Last() == "(прогноз)";
+
         if(dividend != 0)
-            forecastDividends.Add((dividendPaymentDate, dividend));
+            forecastDividends.Add((dividendPaymentDate, dividend, isForecast));
     }
 
     foreach (var dividendRow in dividendItems.Skip(1))
@@ -241,7 +243,7 @@ static async Task<DohodDividends> GetDohodDividends(string ticker)
 
 void PrintForwardYearDividends(List<AllInfoView> allInfos)
 {
-    var allDividends = allInfos.SelectMany(x => x.DividendInfo.ForecastDividents.Select(y => new { y.Item1, y.Item2, x.SmartLabInfo.Ticker }).ToList());
+    var allDividends = allInfos.SelectMany(x => x.DividendInfo.ForecastDividents.Select(y => new { y.Item1, y.Item2, y.Item3, x.SmartLabInfo.Ticker }).ToList());
     var groupByMonth = allDividends.GroupBy(x => (x.Item1.Year, x.Item1.Month)).OrderBy(x => x.Key.Year * 1000 + x.Key.Month);
 
     foreach (var divs in groupByMonth)
@@ -258,13 +260,18 @@ void PrintForwardYearDividends(List<AllInfoView> allInfos)
 
     foreach (var divs in groupByMonth)
     {
-        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.Item2) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.OrderByDescending(x => x.Item2).Select(x => $"\t\t\t\t{x.Item1.Day}\t{x.Ticker}\t{x.Item2 * 0.87 / 1000:0.0}k"))}";
+        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.Item2) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.Where(x => x.Item2 > 0).OrderByDescending(x => x.Item2).Select(x => $"\t\t\t\t{x.Item1.Day}\t{x.Ticker}\t{x.Item2 * 0.87 / 1000:0.0}k\t{GetForecastText(x.Item3)}"))}";
         Console.Write(monthDivMessage);
         File.AppendAllText("output.txt", monthDivMessage);
     }
 
     Console.Write("\n\n");
     File.AppendAllText("output.txt", "\n\n");
+
+    string GetForecastText(bool isForecast)
+    {
+        return isForecast ? "" : "+";
+    }
 }
 
 static async Task<MoexInfo> GetMoexInfo(string ticker)
@@ -393,7 +400,7 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
                 allInfo.DohodDividends.ForwardYearDividend,
                 allForecastDividends,
                 forecastYield,
-                allInfo.DohodDividends.ForecastDividends.Select(x => (x.Item1, x.Item2 * myStocksCount)).ToList());
+                allInfo.DohodDividends.ForecastDividends.Select(x => (x.Item1, x.Item2 * myStocksCount, x.Item3)).ToList());
 
             models.Add(new AllInfoView(smartLabInfo, myStock, tinkoffInfo, allInfo.MoexInfo, calculatedInfo, dividendInfo));
         }
@@ -557,9 +564,9 @@ public record TotalInfo(double MyTotalCap, double TotalBuyRub, int TotalBuyCount
 
 public record MoexInfo(int Listing);
 
-public record DividendInfo(double LastYearDividend, double DividendYield, double DividendWeighted, double ForecastDividendOnStock, double ForecastYearDividends, double ForecastYield, List<(DateTime, double)> ForecastDividents);
+public record DividendInfo(double LastYearDividend, double DividendYield, double DividendWeighted, double ForecastDividendOnStock, double ForecastYearDividends, double ForecastYield, List<(DateTime, double, bool)> ForecastDividents);
 
-public record DohodDividends(double ForwardYearDividend, List<(DateTime, double)> ForecastDividends, List<(DateTime, double)> Dividends);
+public record DohodDividends(double ForwardYearDividend, List<(DateTime, double, bool)> ForecastDividends, List<(DateTime, double)> Dividends);
 
 public class SmartLabInfoComparer : IEqualityComparer<SmartLabInfo>
 {
