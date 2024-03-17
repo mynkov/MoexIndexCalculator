@@ -89,29 +89,29 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeMonth = "0.0%",
         ChangeYear = "0.0%"
     });
-    /*
-        list.Add(new
-        {
-            Title = "ПАО Яковлев (Иркут)",
-            Cap = await GetCapFromSmartLab("IRKT"),
-            Percent = 0.0,
-            Ticker = "IRKT",
-            Price = 0.0,
-            ChangeMonth = "0.0%",
-            ChangeYear = "0.0%"
-        });
+    /* 
+         list.Add(new
+         {
+             Title = "ПАО Яковлев (Иркут)",
+             Cap = await GetCapFromSmartLab("IRKT"),
+             Percent = 0.0,
+             Ticker = "IRKT",
+             Price = 0.0,
+             ChangeMonth = "0.0%",
+             ChangeYear = "0.0%"
+         });
 
-        list.Add(new
-        {
-            Title = "ОАК",
-            Cap = await GetCapFromSmartLab("UNAC"),
-            Percent = 0.0,
-            Ticker = "UNAC",
-            Price = 0.0,
-            ChangeMonth = "0.0%",
-            ChangeYear = "0.0%"
-        });
-     */
+         list.Add(new
+         {
+             Title = "ОАК",
+             Cap = await GetCapFromSmartLab("UNAC"),
+             Percent = 0.0,
+             Ticker = "UNAC",
+             Price = 0.0,
+             ChangeMonth = "0.0%",
+             ChangeYear = "0.0%"
+         }); */
+
 
     list = list.OrderByDescending(x => x.Cap).ToList();
 
@@ -164,11 +164,6 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
     {
         try
         {
-            if (smartLabInfo.Ticker == "TCSG")
-            {
-                continue;
-            }
-
             TickerInfo tinkoffPrefTickerInfo = null;
             if (checkPriviledgedStocks && smartLabInfo.Ticker != "BSPB" && smartLabInfo.Ticker != "SELG")
             {
@@ -206,8 +201,8 @@ static async Task<DohodDividends> GetDohodDividends(string ticker)
     var forecastDividendsItems = htmlDocument.QuerySelectorAll("table[class='content-table']:nth-of-type(3) tr[class='forecast']");
     var dividendItems = htmlDocument.QuerySelectorAll("table[class='content-table']:nth-of-type(3) tr[class!='forecast']");
 
-    var forecastDividends = new List<(DateTime, double, bool)>();
-    var dividends = new List<(DateTime, double)>();
+    var forecastDividends = new List<Dividend>();
+    var dividends = new List<Dividend>();
 
     foreach (var dividendRow in forecastDividendsItems)
     {
@@ -219,8 +214,8 @@ static async Task<DohodDividends> GetDohodDividends(string ticker)
 
         var isForecast = dateText.Split(" ", StringSplitOptions.RemoveEmptyEntries).Last() == "(прогноз)";
 
-        if(dividend != 0)
-            forecastDividends.Add((dividendPaymentDate, dividend, isForecast));
+        if (dividend != 0)
+            forecastDividends.Add(new Dividend(dividendPaymentDate, dividend, isForecast));
     }
 
     foreach (var dividendRow in dividendItems.Skip(1))
@@ -231,8 +226,8 @@ static async Task<DohodDividends> GetDohodDividends(string ticker)
         var dividendText = dividendRow.Children[3].InnerHtml;
         var dividend = double.Parse(dividendText);
 
-        if(dividend != 0)
-            dividends.Add((dividendPaymentDate, dividend));
+        if (dividend != 0)
+            dividends.Add(new Dividend(dividendPaymentDate, dividend, false));
     }
 
     var sumDiv = 0.0;
@@ -243,24 +238,24 @@ static async Task<DohodDividends> GetDohodDividends(string ticker)
 
 void PrintForwardYearDividends(List<AllInfoView> allInfos)
 {
-    var allDividends = allInfos.SelectMany(x => x.DividendInfo.ForecastDividents.Select(y => new { y.Item1, y.Item2, y.Item3, x.SmartLabInfo.Ticker }).ToList());
-    var groupByMonth = allDividends.GroupBy(x => (x.Item1.Year, x.Item1.Month)).OrderBy(x => x.Key.Year * 1000 + x.Key.Month);
+    var allDividends = allInfos.SelectMany(x => x.DividendInfo.ForecastDividents.Select(y => new { y.Date, y.DividendOnAllMyStocks, y.IsForecast, x.SmartLabInfo.Ticker }).ToList());
+    var groupByMonth = allDividends.GroupBy(x => (x.Date.Year, x.Date.Month)).OrderBy(x => x.Key.Year * 1000 + x.Key.Month);
 
     foreach (var divs in groupByMonth)
     {
-        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.Item2) * 0.87 / 1000:0.0}k";
+        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.DividendOnAllMyStocks) * 0.87 / 1000:0.0}k";
         Console.Write(monthDivMessage);
         File.AppendAllText("output.txt", monthDivMessage);
     }
 
-    var total = allDividends.Sum(x => x.Item2) * 0.87;
+    var total = allDividends.Sum(x => x.DividendOnAllMyStocks) * 0.87;
     var totalMessage = $"\n\n{total / 1000:0}k per year, {total / 12 / 1000:0.0}k per month\n\n";
     Console.Write(totalMessage);
     File.AppendAllText("output.txt", totalMessage);
 
     foreach (var divs in groupByMonth)
     {
-        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.Item2) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.Where(x => x.Item2 > 0).OrderByDescending(x => x.Item2).Select(x => $"\t\t\t\t{x.Item1.Day}\t{x.Ticker}\t{x.Item2 * 0.87 / 1000:0.0}k\t{GetForecastText(x.Item3)}"))}";
+        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.DividendOnAllMyStocks) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.Where(x => x.DividendOnAllMyStocks > 0).OrderByDescending(x => x.DividendOnAllMyStocks).Select(x => $"\t\t\t\t{x.Date.Day}\t{x.Ticker}\t{x.DividendOnAllMyStocks * 0.87 / 1000:0.0}k\t{GetForecastText(x.IsForecast)}"))}";
         Console.Write(monthDivMessage);
         File.AppendAllText("output.txt", monthDivMessage);
     }
@@ -380,16 +375,16 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
             withoutBuyPrice);
 
             var now = DateTime.Now;
-            var lastYearDividend = allInfo.DohodDividends.Dividends.Where(x => x.Item1 > now.AddYears(-1) && x.Item1 <= now).Sum(x => x.Item2);
-            var dividendYield = lastYearDividend / price;
+            var lastYearDividend = allInfo.DohodDividends.Dividends.Where(x => x.Date > now.AddYears(-1) && x.Date <= now).Sum(x => x.Value);
+            var dividendYield = price != 0.0 ? lastYearDividend / price : 0;
             var dividendWeighted = smartLabInfo.NewPercent * dividendYield;
 
             totalDividendYield += dividendWeighted;
 
 
-            var myStocksCount = myStockCap / price;
+            var myStocksCount = price != 0.0 ? myStockCap / price : 0;
             var allForecastDividends = allInfo.DohodDividends.ForwardYearDividend * myStocksCount;
-            var forecastYield = allInfo.DohodDividends.ForwardYearDividend / price;
+            var forecastYield = price != 0.0 ? allInfo.DohodDividends.ForwardYearDividend / price : 0;
             totalForecastDividendPayment += allForecastDividends;
 
 
@@ -400,7 +395,7 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
                 allInfo.DohodDividends.ForwardYearDividend,
                 allForecastDividends,
                 forecastYield,
-                allInfo.DohodDividends.ForecastDividends.Select(x => (x.Item1, x.Item2 * myStocksCount, x.Item3)).ToList());
+                allInfo.DohodDividends.ForecastDividends.Select(x => new MyDividend(x.Date, x.Value * myStocksCount, x.IsForecast)).ToList());
 
             models.Add(new AllInfoView(smartLabInfo, myStock, tinkoffInfo, allInfo.MoexInfo, calculatedInfo, dividendInfo));
         }
@@ -564,9 +559,13 @@ public record TotalInfo(double MyTotalCap, double TotalBuyRub, int TotalBuyCount
 
 public record MoexInfo(int Listing);
 
-public record DividendInfo(double LastYearDividend, double DividendYield, double DividendWeighted, double ForecastDividendOnStock, double ForecastYearDividends, double ForecastYield, List<(DateTime, double, bool)> ForecastDividents);
+public record DividendInfo(double LastYearDividend, double DividendYield, double DividendWeighted, double ForecastDividendOnStock, double ForecastYearDividends, double ForecastYield, List<MyDividend> ForecastDividents);
 
-public record DohodDividends(double ForwardYearDividend, List<(DateTime, double, bool)> ForecastDividends, List<(DateTime, double)> Dividends);
+public record MyDividend(DateTime Date, double DividendOnAllMyStocks, bool IsForecast);
+
+public record DohodDividends(double ForwardYearDividend, List<Dividend> ForecastDividends, List<Dividend> Dividends);
+
+public record Dividend(DateTime Date, double Value, bool IsForecast);
 
 public class SmartLabInfoComparer : IEqualityComparer<SmartLabInfo>
 {
