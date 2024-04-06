@@ -79,6 +79,21 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeYear = changesYear[i]
     }).ToList();
 
+    var hh = list.SingleOrDefault(x => x.Ticker == "HHR");
+    if (hh != null)
+    {
+        list.Add(new
+        {
+            Title = hh.Title,
+            Cap = hh.Cap + 1,
+            Percent = hh.Percent,
+            Ticker = "HHRU",
+            Price = hh.Price,
+            ChangeMonth = hh.ChangeMonth,
+            ChangeYear = hh.ChangeYear
+        });
+    }
+
     list.Add(new
     {
         Title = "Газпром нефть",
