@@ -242,6 +242,9 @@ static async Task<DohodDividends> GetDohodDividends(string ticker)
         var dividendText = dividendRow.Children[3].InnerHtml;
         var dividend = double.Parse(dividendText);
 
+        if(ticker == "GMKN")
+            dividend /= 100;
+
         if (dividend != 0)
             dividends.Add(new Dividend(dividendPaymentDate, dividend, false));
     }
