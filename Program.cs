@@ -92,6 +92,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
             ChangeMonth = hh.ChangeMonth,
             ChangeYear = hh.ChangeYear
         });
+        list.Remove(hh);
     }
 
     list.Add(new
