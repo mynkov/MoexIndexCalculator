@@ -6,6 +6,8 @@ using AngleSharp.Common;
 using QuickType;
 using QuickTypeTicker;
 
+Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
+
 var watch = System.Diagnostics.Stopwatch.StartNew();
 var checkPriviledgedStocks = true;
 File.Delete("output.txt");
