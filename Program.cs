@@ -171,8 +171,12 @@ static async Task<double> GetCapFromSmartLab(string ticker)
 static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks, bool checkPriviledgedStocks)
 {
     // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
-    var text = File.ReadAllText("MyStocks.json");
-    var myStocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
+    //var text = File.ReadAllText("MyStocks.json");
+    //var myStocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
+
+    // https://www.tinkoff.ru/api/invest-gw/invest-portfolio/portfolios/purchased-securities
+    var portfolioText = File.ReadAllText("Portfolios.json");
+    var portfolios = JsonSerializer.Deserialize<TinkoffPortfolios.TinkoffPortfolio>(portfolioText, TinkoffPortfolios.Converter.Settings);
 
     var result = new List<AllInfo>();
     var client = new HttpClient();
@@ -194,12 +198,17 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
             }
 
             var ticker = tinkoffPrefTickerInfo?.Payload.Symbol.Ticker ?? smartLabInfo.Ticker;
-            var myStock = myStocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
+            
+            //var myStock = myStocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
+            var myStockCount = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker).Sum(x => x.CurrentBalance);
+            var myStockCap = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker).Sum(x => x.Prices.FullAmount.Value);
+            var myStock = new MyTinkoffStock(myStockCap, (int)myStockCount)
+            
             var tinkoffTickerInfo = tinkoffPrefTickerInfo ?? JsonSerializer.Deserialize<TickerInfo>(await client.GetStringAsync($"{searchTickerUrl}={ticker}"), QuickTypeTicker.Converter.Settings);
             var moexInfo = await GetMoexInfo(tinkoffTickerInfo.Payload.Symbol.Ticker);
             var dohodDividends = await GetDohodDividends(ticker);
 
-            result.Add(new AllInfo(smartLabInfo, myStock?.ValueAbsolute.Value ?? 0.0, tinkoffTickerInfo.Payload, moexInfo, dohodDividends));
+            result.Add(new AllInfo(smartLabInfo, tinkoffTickerInfo.Payload, moexInfo, dohodDividends, myStock));
 
         }
         catch (Exception exc)
@@ -316,7 +325,7 @@ static async Task<MoexInfo> GetMoexInfo(string ticker)
 
 static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
 {
-    var myTotalCap = allInfos.Sum(x => x.MyStockCap);
+    var myTotalCap = allInfos.Sum(x => x.MyStock.Cap);
     var totalBuyRub = 0.0;
     var totalBuyCount = 0;
     var totalDividendYield = 0.0;
@@ -331,7 +340,7 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
             var tinkoffTickerInfo = allInfo.TinkoffInfoPayload;
             var tinkoffSymbol = tinkoffTickerInfo.Symbol;
 
-            var myStockCap = smartLabInfo.Ticker == "PIKK" ? allInfo.MyStockCap - 90000 : allInfo.MyStockCap;
+            var myStockCap = allInfo.MyStock.Cap;
 
             var myStock = new MyStock(
             myStockCap);
@@ -400,7 +409,7 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
             totalDividendYield += dividendWeighted;
 
 
-            var myStocksCount = price != 0.0 ? myStockCap / price : 0;
+            var myStocksCount = allInfo.MyStock.Count; //price != 0.0 ? myStockCap / price : 0;
             var allForecastDividends = allInfo.DohodDividends.ForwardYearDividend * myStocksCount;
             var forecastYield = price != 0.0 ? allInfo.DohodDividends.ForwardYearDividend / price : 0;
             totalForecastDividendPayment += allForecastDividends;
@@ -561,11 +570,13 @@ static void PrintSmartLabInfo(SmartLabInfo smartLabInfo)
 
 public record SmartLabInfo(int Index, string Title, string Ticker, double Cap, double Price, double Percent, double NewPercent, double PercentDiff, string changeMonth, string changeYear);
 
-public record AllInfo(SmartLabInfo SmartLabInfo, double MyStockCap, Payload TinkoffInfoPayload, MoexInfo MoexInfo, DohodDividends DohodDividends);
+public record AllInfo(SmartLabInfo SmartLabInfo, Payload TinkoffInfoPayload, MoexInfo MoexInfo, DohodDividends DohodDividends, MyTinkoffStock MyStock);
 
 public record AllInfoView(SmartLabInfo SmartLabInfo, MyStock MyStock, TinkoffInfo TinkoffInfo, MoexInfo MoexInfo, CalculatedInfo CalculatedInfo, DividendInfo DividendInfo);
 
 public record AllInfoViews(List<AllInfoView> AllInfos, TotalInfo Total);
+
+public record MyTinkoffStock(double Cap, int Count);
 
 public record MyStock(double MyStockCap);
 
