@@ -362,7 +362,7 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
             var myStockCap = allInfo.MyStock.Cap;
 
             var myStock = new MyStock(
-            myStockCap);
+            myStockCap, allInfo.MyStock.Count);
 
             var myPercent = myStockCap / myTotalCap;
             var myDiff = smartLabInfo.NewPercent - myPercent;
@@ -597,7 +597,7 @@ public record AllInfoViews(List<AllInfoView> AllInfos, TotalInfo Total);
 
 public record MyTinkoffStock(double Cap, int Count);
 
-public record MyStock(double MyStockCap);
+public record MyStock(double MyStockCap, int Count);
 
 public record CalculatedInfo(double MyPercent, double MyDiff, double AmountToBuy, double MyDiffRub, double LotPrice, double Price, bool WithoutBuyPrice);
 
