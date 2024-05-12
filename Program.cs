@@ -170,42 +170,18 @@ static async Task<double> GetCapFromSmartLab(string ticker)
 
 static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks, bool checkPriviledgedStocks)
 {
-    // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
-    //var text = File.ReadAllText("MyStocks.json");
-    //var myStocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
-
-    // https://www.tinkoff.ru/api/invest-gw/invest-portfolio/portfolios/purchased-securities
-    var portfolioText = File.ReadAllText("Portfolios.json");
-    var portfolios = JsonSerializer.Deserialize<TinkoffPortfolios.TinkoffPortfolio>(portfolioText, TinkoffPortfolios.Converter.Settings);
-
     var result = new List<AllInfo>();
-    var client = new HttpClient();
-    const string searchTickerUrl = "https://www.tinkoff.ru/api/trading/stocks/get?ticker";
+    TinkoffPortfolios.TinkoffPortfolio portfolios = null;
 
     foreach (var smartLabInfo in smartLabStocks)
     {
         try
         {
-            TickerInfo tinkoffPrefTickerInfo = null;
-            if (checkPriviledgedStocks && smartLabInfo.Ticker != "BSPB" && smartLabInfo.Ticker != "SELG")
-            {
-                var resultPref = await client.GetStringAsync($"{searchTickerUrl}={smartLabInfo.Ticker}P");
-                tinkoffPrefTickerInfo = JsonSerializer.Deserialize<TickerInfo>(resultPref, QuickTypeTicker.Converter.Settings);
-                if (tinkoffPrefTickerInfo.Payload.Code == "TickerNotFound")
-                {
-                    tinkoffPrefTickerInfo = null;
-                }
-            }
-
-            var ticker = tinkoffPrefTickerInfo?.Payload.Symbol.Ticker ?? smartLabInfo.Ticker;
+            var tinkoffTickerInfo = await GetTinkoffTickerInfo(smartLabInfo.Ticker, checkPriviledgedStocks);
+            var ticker = tinkoffTickerInfo.Payload.Symbol.Ticker; 
             
-            //var myStock = myStocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
-            var myStockCount = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker).Sum(x => x.CurrentBalance);
-            var myStockCap = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker).Sum(x => x.Prices.FullAmount.Value);
-            var myStock = new MyTinkoffStock(myStockCap, (int)myStockCount)
-            
-            var tinkoffTickerInfo = tinkoffPrefTickerInfo ?? JsonSerializer.Deserialize<TickerInfo>(await client.GetStringAsync($"{searchTickerUrl}={ticker}"), QuickTypeTicker.Converter.Settings);
-            var moexInfo = await GetMoexInfo(tinkoffTickerInfo.Payload.Symbol.Ticker);
+            var myStock = GetMyTinkoffStock(ticker, ref portfolios);
+            var moexInfo = await GetMoexInfo(ticker);
             var dohodDividends = await GetDohodDividends(ticker);
 
             result.Add(new AllInfo(smartLabInfo, tinkoffTickerInfo.Payload, moexInfo, dohodDividends, myStock));
@@ -217,6 +193,49 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
         }
     }
     return result;
+}
+
+static async Task<TickerInfo> GetTinkoffTickerInfo(string ticker, bool checkPriviledgedStocks)
+{
+            var client = new HttpClient();
+            const string searchTickerUrl = "https://www.tinkoff.ru/api/trading/stocks/get?ticker";
+
+            TickerInfo tinkoffPrefTickerInfo = null;
+            if (checkPriviledgedStocks && ticker != "BSPB" && ticker != "SELG")
+            {
+                var resultPref = await client.GetStringAsync($"{searchTickerUrl}={ticker}P");
+                tinkoffPrefTickerInfo = JsonSerializer.Deserialize<TickerInfo>(resultPref, QuickTypeTicker.Converter.Settings);
+                if (tinkoffPrefTickerInfo.Payload.Code == "TickerNotFound")
+                {
+                    tinkoffPrefTickerInfo = null;
+                }
+            }
+
+            var tinkoffTickerInfo = tinkoffPrefTickerInfo ?? JsonSerializer.Deserialize<TickerInfo>(await client.GetStringAsync($"{searchTickerUrl}={ticker}"), QuickTypeTicker.Converter.Settings);
+            return tinkoffTickerInfo;            
+}
+
+static MyTinkoffStock GetMyTinkoffStock(string ticker, ref TinkoffPortfolios.TinkoffPortfolio portfolios)
+{
+        // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
+    //var text = File.ReadAllText("MyStocks.json");
+    //var myStocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
+
+    
+
+    if(portfolios == null)
+    {
+        // https://www.tinkoff.ru/api/invest-gw/invest-portfolio/portfolios/purchased-securities
+    var portfolioText = File.ReadAllText("Portfolios.json");
+    portfolios = JsonSerializer.Deserialize<TinkoffPortfolios.TinkoffPortfolio>(portfolioText, TinkoffPortfolios.Converter.Settings);
+    }
+
+    //var myStock = myStocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
+
+    var positions = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker);
+            var myStockCount = positions.Sum(x => x.CurrentBalance);
+            var myStockCap = positions.Sum(x => x.Prices.FullAmount.Value);
+            return new MyTinkoffStock(myStockCap, (int)myStockCount);
 }
 
 static async Task<DohodDividends> GetDohodDividends(string ticker)
