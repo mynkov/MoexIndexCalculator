@@ -181,7 +181,7 @@ namespace TinkoffPortfolios
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         [JsonPropertyName("blockedQuantity")]
-        public long? BlockedQuantity { get; set; }
+        public double? BlockedQuantity { get; set; }
     }
 
     public partial class ActiveMarketingOffers

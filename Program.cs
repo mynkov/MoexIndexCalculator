@@ -235,7 +235,8 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, ref TinkoffPortfolios.Tin
     var positions = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker);
     var myStockCount = positions.Sum(x => x.CurrentBalance);
     var myStockCap = positions.Sum(x => x.Prices.FullAmount.Value);
-    return new MyTinkoffStock(myStockCap, (int)myStockCount);
+    var profitRub = positions.Sum(x => x.Yields.Yield.Absolute.Value);
+    return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
 }
 
 static async Task<DohodDividends> GetDohodDividends(string ticker)
@@ -362,7 +363,9 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
             var myStockCap = allInfo.MyStock.Cap;
 
             var myStock = new MyStock(
-            myStockCap, allInfo.MyStock.Count);
+            myStockCap,
+            allInfo.MyStock.Count,
+            allInfo.MyStock.ProfitRub);
 
             var myPercent = myStockCap / myTotalCap;
             var myDiff = smartLabInfo.NewPercent - myPercent;
@@ -461,7 +464,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
 
     File.AppendAllText("output.txt", title + "\n\n");
 
-    var header = $"Idx\tTarget p\tMy p\tDiff p\tMy cap\tSmart p\tS diff p\tCap\t\tCh year\tCh mon\tYield\tYield f\tStatus\tTicker\t\t\t\t\t\t\t\t\t\tBuy\tDiff ru\tLot p\tPrice\tSize\tIsin\t\t\tNot ru\t$\tLiquid\tListing\tRisk\tRelia\tDiv y\tDiv w\t\tDiv st\tD f\tTitle";
+    var header = $"Idx\tTarget p\tMy p\tDiff p\tMy cap\tSmart p\tS diff p\tCap\t\tCh year\tCh mon\tYield\tYield f\tStatus\tTicker\t\t\t\t\t\t\t\t\t\tBuy\tDiff ru\tLot p\tPrice\tSize\tIsin\t\t\tNot ru\t$\tLiquid\tListing\tRisk\tRelia\tDiv y\tDiv w\t\tDiv st\tD f\tProfit\tTitle";
     Console.WriteLine(header);
     File.AppendAllText("output.txt", header + "\n");
 
@@ -531,8 +534,9 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
             var forecastYieldText = allInfoView.DividendInfo.ForecastYield > 0 ? $"{allInfoView.DividendInfo.ForecastYield:P2}" : "     ";
 
             var myStockCapText = myStock.MyStockCap >= 1000000 ? $"{myStock.MyStockCap / 1000:0}" : $"{myStock.MyStockCap / 1000:0}\t";
+            var profitRubText = myStock.ProfitRub != 0 ? myStock.ProfitRub > 0 && myStock.ProfitRub < 1000 ? $"{myStock.ProfitRub:0} " : $"{myStock.ProfitRub:0}" : "    ";
 
-            var line = $"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{forecastYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t\t{allInfoView.DividendInfo.ForecastDividendOnStock / 1000:0.000}\t{allInfoView.DividendInfo.ForecastYearDividends * 0.87 / 1000:0}\t{smartLabInfo.Title}";
+            var line = $"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{forecastYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t\t{allInfoView.DividendInfo.ForecastDividendOnStock / 1000:0.000}\t{allInfoView.DividendInfo.ForecastYearDividends * 0.87 / 1000:0}\t{profitRubText}\t{smartLabInfo.Title}";
             Console.WriteLine(line);
             File.AppendAllText("output.txt", line + "\n");
         }
@@ -549,6 +553,11 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
     var totalBuyRubMessage = $"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)";
     Console.Write(totalBuyRubMessage);
     File.AppendAllText("output.txt", totalBuyRubMessage);
+
+    var totalLoss = -allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.ProfitRub);
+    var totalLossMessage = $"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.15 / 1000:0}k (15% tax)";
+    Console.Write(totalLossMessage);
+    File.AppendAllText("output.txt", totalLossMessage);
 
     var totalDividendYieldMessage = $"\nTotal dividend yield: {total.TotalDividendYield:P2} ({total.TotalDividendYield * 0.87:P2} after tax), {total.MyTotalCap * total.TotalDividendYield * 0.87 / 1000:0}k per year, {total.MyTotalCap * total.TotalDividendYield * 0.87 / 12 / 1000:0.0}k per month";
     Console.Write(totalDividendYieldMessage);
@@ -595,9 +604,9 @@ public record AllInfoView(SmartLabInfo SmartLabInfo, MyStock MyStock, TinkoffInf
 
 public record AllInfoViews(List<AllInfoView> AllInfos, TotalInfo Total);
 
-public record MyTinkoffStock(double Cap, int Count);
+public record MyTinkoffStock(double Cap, int Count, double ProfitRub);
 
-public record MyStock(double MyStockCap, int Count);
+public record MyStock(double MyStockCap, int Count, double ProfitRub);
 
 public record CalculatedInfo(double MyPercent, double MyDiff, double AmountToBuy, double MyDiffRub, double LotPrice, double Price, bool WithoutBuyPrice);
 
