@@ -235,7 +235,8 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, ref TinkoffPortfolios.Tin
     var positions = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker);
     var myStockCount = positions.Sum(x => x.CurrentBalance);
     var myStockCap = positions.Sum(x => x.Prices.FullAmount.Value);
-    var profitRub = positions.Sum(x => x.Yields.Yield.Absolute.Value);
+    var profitRub = portfolios.Portfolios.Single(x => x.BrokerAccount.Name == "Брокерский счёт").Positions.SingleOrDefault(x => x.Ticker == ticker)?.Yields.Yield.Absolute.Value ?? 0;
+    //var profitRub = positions.Sum(x => x.Yields.Yield.Absolute.Value);
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
 }
 
