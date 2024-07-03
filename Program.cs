@@ -556,7 +556,8 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
     File.AppendAllText("output.txt", totalBuyRubMessage);
 
     var totalLoss = -allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.ProfitRub);
-    var totalLossMessage = $"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.15 / 1000:0}k (15% tax)";
+    var totalSell = allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.MyStockCap);
+    var totalLossMessage = $"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.15 / 1000:0}k (15% tax), sell {totalSell/1000:0}k ({totalSell*0.0003*2/1000:0.000}k fee)";
     Console.Write(totalLossMessage);
     File.AppendAllText("output.txt", totalLossMessage);
 
