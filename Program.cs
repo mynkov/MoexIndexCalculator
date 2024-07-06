@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Text.Json;
 using AngleSharp;
 using AngleSharp.Common;
-using QuickType;
 using QuickTypeTicker;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
@@ -49,9 +48,7 @@ PrintSmartLabInfos(bigSmartLabStocks.Where(x => Math.Abs(x.PercentDiff) >= 0.005
 PrintSmartLabInfos(allSmartLabStocks.Where(x => Math.Abs(x.PercentDiff) >= 0.005).OrderByDescending(x => x.PercentDiff).ToList(), "All companies percent diff:");
 
 watch.Stop();
-var executionTimeMessage = $"\n\nExecution time: {watch.ElapsedMilliseconds}ms";
-Console.WriteLine(executionTimeMessage);
-File.AppendAllText("output.txt", executionTimeMessage);
+WriteLine($"\n\nExecution time: {watch.ElapsedMilliseconds}ms");
 
 Console.ReadLine();
 
@@ -171,7 +168,11 @@ static async Task<double> GetCapFromSmartLab(string ticker)
 static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks, bool checkPriviledgedStocks)
 {
     var result = new List<AllInfo>();
-    TinkoffPortfolios.TinkoffPortfolio portfolios = null;
+
+    var portfolioText = File.ReadAllText("Portfolios.json");
+    var portfolios = JsonSerializer.Deserialize<TinkoffPortfolios.TinkoffPortfolio>(portfolioText, TinkoffPortfolios.Converter.Settings);
+
+    PrintNotInIndexStocks(portfolios, smartLabStocks.Select(x => x.Ticker).ToList());
 
     foreach (var smartLabInfo in smartLabStocks)
     {
@@ -180,7 +181,7 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
             var tinkoffTickerInfo = await GetTinkoffTickerInfo(smartLabInfo.Ticker, checkPriviledgedStocks);
             var ticker = tinkoffTickerInfo.Payload.Symbol.Ticker;
 
-            var myStock = GetMyTinkoffStock(ticker, ref portfolios);
+            var myStock = GetMyTinkoffStock(ticker, portfolios);
             var moexInfo = await GetMoexInfo(ticker);
             var dohodDividends = await GetDohodDividends(ticker);
 
@@ -192,7 +193,50 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
             throw new Exception(smartLabInfo.Ticker, exc);
         }
     }
+
     return result;
+}
+
+static void PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios, List<string> tickers)
+{
+    var positions = portfolios.Portfolios.SelectMany(x => x.Positions).OrderByDescending(x => x.SecurityType).ToList();
+    var allMyTickers = positions.Select(x => x.Ticker).ToList();
+    var notInIndexTickers = allMyTickers.Except(tickers.Union(tickers.Select(x => $"{x}P")));
+
+
+    var totalCap = 0.0;
+
+    foreach (var ticker in notInIndexTickers)
+    {
+        var cap = positions.Where(x => x.Ticker == ticker).Sum(x => x.Prices.FullAmount.Value);
+        var capText = $"{cap/1000:0.0}".PadRight(5);
+        totalCap += cap;
+
+        var myStock = positions.First(x => x.Ticker == ticker);
+
+        var isin = myStock.PositionParams.Isin;
+        var isinText = isin == null ? "            " : isin;
+        var isRu = isin != null && isin.StartsWith("RU");
+        var isRuText = isRu ? "Ru" : " ";
+
+        var name = myStock.PositionParams.DisplayParams.ShowName;
+
+        var currency = myStock.Prices.FullAmount.Currency;
+        var currencyText = currency == TinkoffPortfolios.Currency.Rub ? "   " : currency.ToString();
+
+        var tickerText = ticker.PadRight(18);
+
+        var type = myStock.SecurityType;
+        var typeText = type == TinkoffPortfolios.SecurityType.Currency ? "currencies" : $"{type.ToString().ToLower()}s";
+
+        var link = $"https://www.tinkoff.ru/invest/{typeText}/{ticker}".PadRight(65);
+        WriteLine($"{tickerText}\t{isinText}\t{isRuText}\t{capText}\t{currencyText}\t\t{link}\t{name}");
+    }
+
+    WriteLine();
+    WriteLine($"Total cap: {totalCap/1000:0}k");
+
+    WriteLine();
 }
 
 static async Task<TickerInfo> GetTinkoffTickerInfo(string ticker, bool checkPriviledgedStocks)
@@ -215,21 +259,11 @@ static async Task<TickerInfo> GetTinkoffTickerInfo(string ticker, bool checkPriv
     return tinkoffTickerInfo;
 }
 
-static MyTinkoffStock GetMyTinkoffStock(string ticker, ref TinkoffPortfolios.TinkoffPortfolio portfolios)
+static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.TinkoffPortfolio portfolios)
 {
     // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
     //var text = File.ReadAllText("MyStocks.json");
     //var myStocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
-
-
-
-    if (portfolios == null)
-    {
-        // https://www.tinkoff.ru/api/invest-gw/invest-portfolio/portfolios/purchased-securities
-        var portfolioText = File.ReadAllText("Portfolios.json");
-        portfolios = JsonSerializer.Deserialize<TinkoffPortfolios.TinkoffPortfolio>(portfolioText, TinkoffPortfolios.Converter.Settings);
-    }
-
     //var myStock = myStocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
 
     var positions = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker);
@@ -291,25 +325,18 @@ void PrintForwardYearDividends(List<AllInfoView> allInfos)
 
     foreach (var divs in groupByMonth)
     {
-        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.DividendOnAllMyStocks) * 0.87 / 1000:0.0}k";
-        Console.Write(monthDivMessage);
-        File.AppendAllText("output.txt", monthDivMessage);
+        Write($"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.DividendOnAllMyStocks) * 0.87 / 1000:0.0}k");
     }
 
     var total = allDividends.Sum(x => x.DividendOnAllMyStocks) * 0.87;
-    var totalMessage = $"\n\n{total / 1000:0}k per year, {total / 12 / 1000:0.0}k per month\n\n";
-    Console.Write(totalMessage);
-    File.AppendAllText("output.txt", totalMessage);
+    Write($"\n\n{total / 1000:0}k per year, {total / 12 / 1000:0.0}k per month\n\n");
 
     foreach (var divs in groupByMonth)
     {
-        var monthDivMessage = $"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.DividendOnAllMyStocks) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.Where(x => x.DividendOnAllMyStocks > 0).OrderByDescending(x => x.DividendOnAllMyStocks).Select(x => $"\t\t\t\t{x.Date.Day}\t{x.Ticker}\t{x.DividendOnAllMyStocks * 0.87 / 1000:0.0}k\t{GetForecastText(x.IsForecast)}"))}";
-        Console.Write(monthDivMessage);
-        File.AppendAllText("output.txt", monthDivMessage);
+        Write($"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.DividendOnAllMyStocks) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.Where(x => x.DividendOnAllMyStocks > 0).OrderByDescending(x => x.DividendOnAllMyStocks).Select(x => $"\t\t\t\t{x.Date.Day}\t{x.Ticker}\t{x.DividendOnAllMyStocks * 0.87 / 1000:0.0}k\t{GetForecastText(x.IsForecast)}"))}");
     }
 
-    Console.Write("\n\n");
-    File.AppendAllText("output.txt", "\n\n");
+    Write("\n\n");
 
     string GetForecastText(bool isForecast)
     {
@@ -460,14 +487,10 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
 
 static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo total, string title)
 {
-    Console.WriteLine(title);
-    Console.WriteLine();
+    WriteLine(title);
+    WriteLine();
 
-    File.AppendAllText("output.txt", title + "\n\n");
-
-    var header = $"Idx\tTarget p\tMy p\tDiff p\tMy cap\tSmart p\tS diff p\tCap\t\tCh year\tCh mon\tYield\tYield f\tStatus\tTicker\t\t\t\t\t\t\t\t\t\tBuy\tDiff ru\tLot p\tPrice\tSize\tIsin\t\t\tNot ru\t$\tLiquid\tListing\tRisk\tRelia\tDiv y\tDiv w\t\tDiv st\tD f\tProfit\tTitle";
-    Console.WriteLine(header);
-    File.AppendAllText("output.txt", header + "\n");
+    WriteLine($"Idx\tTarget p\tMy p\tDiff p\tMy cap\tSmart p\tS diff p\tCap\t\tCh year\tCh mon\tYield\tYield f\tStatus\tTicker\t\t\t\t\t\t\t\t\t\tBuy\tDiff ru\tLot p\tPrice\tSize\tIsin\t\t\tNot ru\t$\tLiquid\tListing\tRisk\tRelia\tDiv y\tDiv w\t\tDiv st\tD f\tProfit\tTitle");
 
 
     foreach (var allInfoView in allInfoViews)
@@ -537,9 +560,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
             var myStockCapText = myStock.MyStockCap >= 1000000 ? $"{myStock.MyStockCap / 1000:0}" : $"{myStock.MyStockCap / 1000:0}\t";
             var profitRubText = myStock.ProfitRub != 0 ? myStock.ProfitRub > 0 && myStock.ProfitRub < 1000 ? $"{myStock.ProfitRub:0} " : $"{myStock.ProfitRub:0}" : "    ";
 
-            var line = $"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{forecastYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t\t{allInfoView.DividendInfo.ForecastDividendOnStock / 1000:0.000}\t{allInfoView.DividendInfo.ForecastYearDividends * 0.87 / 1000:0}\t{profitRubText}\t{smartLabInfo.Title}";
-            Console.WriteLine(line);
-            File.AppendAllText("output.txt", line + "\n");
+            WriteLine($"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{forecastYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t\t{allInfoView.DividendInfo.ForecastDividendOnStock / 1000:0.000}\t{allInfoView.DividendInfo.ForecastYearDividends * 0.87 / 1000:0}\t{profitRubText}\t{smartLabInfo.Title}");
         }
         catch (Exception exc)
         {
@@ -547,55 +568,53 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
         }
     }
 
-    var totalCapMessage = $"\nMy total cap: {total.MyTotalCap / 1000000:0.000}";
-    Console.Write(totalCapMessage);
-    File.AppendAllText("output.txt", totalCapMessage);
-
-    var totalBuyRubMessage = $"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)";
-    Console.Write(totalBuyRubMessage);
-    File.AppendAllText("output.txt", totalBuyRubMessage);
+    Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}");
+    Write($"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)");
 
     var totalLoss = -allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.ProfitRub);
     var totalSell = allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.MyStockCap);
-    var totalLossMessage = $"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.15 / 1000:0}k (15% tax), sell {totalSell/1000:0}k ({totalSell*0.0003*2/1000:0.000}k fee)";
-    Console.Write(totalLossMessage);
-    File.AppendAllText("output.txt", totalLossMessage);
-
-    var totalDividendYieldMessage = $"\nTotal dividend yield: {total.TotalDividendYield:P2} ({total.TotalDividendYield * 0.87:P2} after tax), {total.MyTotalCap * total.TotalDividendYield * 0.87 / 1000:0}k per year, {total.MyTotalCap * total.TotalDividendYield * 0.87 / 12 / 1000:0.0}k per month";
-    Console.Write(totalDividendYieldMessage);
-    File.AppendAllText("output.txt", totalDividendYieldMessage);
+    Write($"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.15 / 1000:0}k (15% tax), sell {totalSell / 1000:0}k ({totalSell * 0.0003 * 2 / 1000:0.000}k fee)");
+    Write($"\nTotal dividend yield: {total.TotalDividendYield:P2} ({total.TotalDividendYield * 0.87:P2} after tax), {total.MyTotalCap * total.TotalDividendYield * 0.87 / 1000:0}k per year, {total.MyTotalCap * total.TotalDividendYield * 0.87 / 12 / 1000:0.0}k per month");
 
 
-    var totalForecastDividendPaymentMessage = $"\nTotal forecast dividend payment: {total.TotalForecastDividendPayment / total.MyTotalCap:P2}, ({total.TotalForecastDividendPayment / total.MyTotalCap * 0.87:P2} after tax), {total.TotalForecastDividendPayment * 0.87 / 1000:0}k per year, {total.TotalForecastDividendPayment * 0.87 / 12 / 1000:0.0}k per month";
-    Console.Write(totalForecastDividendPaymentMessage);
-    File.AppendAllText("output.txt", totalForecastDividendPaymentMessage);
+    Write($"\nTotal forecast dividend payment: {total.TotalForecastDividendPayment / total.MyTotalCap:P2}, ({total.TotalForecastDividendPayment / total.MyTotalCap * 0.87:P2} after tax), {total.TotalForecastDividendPayment * 0.87 / 1000:0}k per year, {total.TotalForecastDividendPayment * 0.87 / 12 / 1000:0.0}k per month");
 
-    Console.WriteLine();
-    Console.WriteLine();
-    File.AppendAllText("output.txt", "\n\n");
+    WriteLine();
+    WriteLine();
 }
 
 static void PrintSmartLabInfos(List<SmartLabInfo> smartLabInfos, string title)
 {
-    Console.WriteLine(title);
-    Console.WriteLine();
+    WriteLine(title);
+    WriteLine();
 
-    File.AppendAllText("output.txt", title + "\n\n");
 
     foreach (var smartLabInfo in smartLabInfos)
     {
-        PrintSmartLabInfo(smartLabInfo);
+        WriteLine($"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t{smartLabInfo.Cap:0.00}\thttps://www.tinkoff.ru/invest/stocks/{smartLabInfo.Ticker}\t{smartLabInfo.Price / 1000:0.000}\t{smartLabInfo.Title}");
     }
-    Console.WriteLine();
-    Console.WriteLine();
-    File.AppendAllText("output.txt", "\n\n");
+    WriteLine();
+    WriteLine();
 }
 
-static void PrintSmartLabInfo(SmartLabInfo smartLabInfo)
+static void WriteLine(string message = null)
 {
-    var line = $"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t{smartLabInfo.Cap:0.00}\thttps://www.tinkoff.ru/invest/stocks/{smartLabInfo.Ticker}\t{smartLabInfo.Price / 1000:0.000}\t{smartLabInfo.Title}";
-    Console.WriteLine(line);
-    File.AppendAllText("output.txt", line + "\n");
+    if (message == null)
+    {
+        Console.WriteLine();
+        File.AppendAllText("output.txt", "\n");
+    }
+    else
+    {
+        Console.WriteLine(message);
+        File.AppendAllText("output.txt", $"{message}\n");
+    }
+}
+
+static void Write(string message)
+{
+    Console.Write(message);
+    File.AppendAllText("output.txt", message);
 }
 
 public record SmartLabInfo(int Index, string Title, string Ticker, double Cap, double Price, double Percent, double NewPercent, double PercentDiff, string changeMonth, string changeYear);
