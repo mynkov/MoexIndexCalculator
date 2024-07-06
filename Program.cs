@@ -130,18 +130,18 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
 
     list = list.OrderByDescending(x => x.Cap).ToList();
 
-    var capSum = list.GroupBy(x => x.Cap).Sum(x => x.Key);
+    var capSum = list.GroupBy(x => x.Ticker).Sum(x => x.First().Cap);
 
-    var companies = list.GroupBy(x => x.Cap).Select((x, i) => new
+    var companies = list.GroupBy(x => x.Ticker).Select((x, i) => new
             SmartLabInfo(
                 i + 1,
                 string.Join(", ", x.Select(y => x.Count() > 1 ? $"{y.Title} ({y.Percent:P2}, {y.Price}Р)" : y.Title)),
                 x.First().Ticker,
-                x.Key,
+                x.First().Cap,
                 x.Last().Price,
                 x.Sum(s => s.Percent),
-                x.Key / capSum,
-                x.Key / capSum - x.Sum(s => s.Percent),
+                x.First().Cap / capSum,
+                x.First().Cap / capSum - x.Sum(s => s.Percent),
                 x.Last().ChangeMonth,
                 x.Last().ChangeYear
                 )).ToList();
