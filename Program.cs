@@ -78,7 +78,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeYear = changesYear[i]
     }).ToList();
 
-    var hh = list.SingleOrDefault(x => x.Ticker == "HHR");
+    var hh = list.SingleOrDefault(x => x.Ticker == "HEAD");
     if (hh != null)
     {
         list.Add(new
@@ -100,6 +100,18 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         Cap = await GetCapFromSmartLab("SIBN"),
         Percent = 0.0,
         Ticker = "SIBN",
+        Price = 0.0,
+        ChangeMonth = "0.0%",
+        ChangeYear = "0.0%"
+    });
+
+
+        list.Add(new
+    {
+        Title = "Яндекс",
+        Cap = 1600.0,
+        Percent = 0.0,
+        Ticker = "YDEX",
         Price = 0.0,
         ChangeMonth = "0.0%",
         ChangeYear = "0.0%"
@@ -229,7 +241,7 @@ static void PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios,
         var type = myStock.SecurityType;
         var typeText = type == TinkoffPortfolios.SecurityType.Currency ? "currencies" : $"{type.ToString().ToLower()}s";
 
-        var link = $"https://www.tinkoff.ru/invest/{typeText}/{ticker}".PadRight(65);
+        var link = $"https://www.tinkoff.ru/invest/{typeText}/{ticker}".PadRight(55);
         WriteLine($"{tickerText}\t{isinText}\t{isRuText}\t{capText}\t{currencyText}\t\t{link}\t{name}");
     }
 
@@ -573,7 +585,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
 
     var totalLoss = -allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.ProfitRub);
     var totalSell = allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.MyStockCap);
-    Write($"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.15 / 1000:0}k (15% tax), sell {totalSell / 1000:0}k ({totalSell * 0.0003 * 2 / 1000:0.000}k fee)");
+    Write($"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.13 / 1000:0}k (13% tax), sell {totalSell / 1000:0}k ({totalSell * 0.0003 * 2 / 1000:0.000}k fee)");
     Write($"\nTotal dividend yield: {total.TotalDividendYield:P2} ({total.TotalDividendYield * 0.87:P2} after tax), {total.MyTotalCap * total.TotalDividendYield * 0.87 / 1000:0}k per year, {total.MyTotalCap * total.TotalDividendYield * 0.87 / 12 / 1000:0.0}k per month");
 
 
