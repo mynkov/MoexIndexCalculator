@@ -184,6 +184,7 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
     var portfolioText = File.ReadAllText("Portfolios.json");
     var portfolios = JsonSerializer.Deserialize<TinkoffPortfolios.TinkoffPortfolio>(portfolioText, TinkoffPortfolios.Converter.Settings);
 
+    PrintNotInMyPortfolioTickers(portfolios, smartLabStocks);
     PrintNotInIndexStocks(portfolios, smartLabStocks.Select(x => x.Ticker).ToList());
 
     foreach (var smartLabInfo in smartLabStocks)
@@ -221,7 +222,7 @@ static void PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios,
     foreach (var ticker in notInIndexTickers)
     {
         var cap = positions.Where(x => x.Ticker == ticker).Sum(x => x.Prices.FullAmount.Value);
-        var capText = $"{cap/1000:0.0}".PadRight(5);
+        var capText = $"{cap / 1000:0.0}".PadRight(5);
         totalCap += cap;
 
         var myStock = positions.First(x => x.Ticker == ticker);
@@ -246,7 +247,22 @@ static void PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios,
     }
 
     WriteLine();
-    WriteLine($"Total cap: {totalCap/1000:0}k");
+    WriteLine($"Total cap: {totalCap / 1000:0}k");
+
+    WriteLine();
+}
+
+static void PrintNotInMyPortfolioTickers(TinkoffPortfolios.TinkoffPortfolio portfolios, List<SmartLabInfo> smartLabInfos)
+{
+    var tickers = smartLabInfos.Select(x => x.Ticker);
+    var positions = portfolios.Portfolios.SelectMany(x => x.Positions).OrderByDescending(x => x.SecurityType).ToList();
+    var allMyTickers = positions.Select(x => x.Ticker).ToList();
+    var notInMyPortfolioTickers = tickers.Except(allMyTickers.Union(allMyTickers.Where(x => x.EndsWith("P")).Select(x => x[..^1])));
+    foreach (var ticker in notInMyPortfolioTickers)
+    {
+        var smartLabInfo = smartLabInfos.Single(x => x.Ticker == ticker);
+        WriteLine($"https://www.tinkoff.ru/invest/stocks/{ticker}\t{smartLabInfo.Title}");
+    }
 
     WriteLine();
 }
