@@ -106,7 +106,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
     });
 
 
-        list.Add(new
+    list.Add(new
     {
         Title = "Яндекс",
         Cap = 1600.0,
