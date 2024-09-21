@@ -67,12 +67,12 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
     var changesYear = document.QuerySelectorAll("table tr td:nth-child(11)").Select(m => m.TextContent).ToList();
     var caps = document.QuerySelectorAll("table tr td:nth-child(12)").Select(m => m.TextContent).ToList();
 
-    var list = titles.Select((x, i) => new
+    var list = tickers.Select((x, i) => new
     {
-        Title = x,
+        Title = titles[i],
         Cap = !string.IsNullOrWhiteSpace(caps[i]) ? double.Parse(caps[i].Replace(" ", "")) : 0,
         Percent = !string.IsNullOrWhiteSpace(percents[i]) ? double.Parse(percents[i].Replace("%", "")) / 100 : 0,
-        Ticker = tickers[i],
+        Ticker = x,
         Price = !string.IsNullOrWhiteSpace(prices[i]) ? double.Parse(prices[i]) : 0,
         ChangeMonth = changesMonth[i],
         ChangeYear = changesYear[i]
@@ -116,6 +116,11 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeMonth = "0.0%",
         ChangeYear = "0.0%"
     });
+    var ya = list.SingleOrDefault(x => x.Ticker == "YNDX");
+    if (ya != null)
+    {
+        list.Remove(ya);
+    }
     /* 
          list.Add(new
          {
@@ -297,8 +302,13 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     var positions = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker);
     var myStockCount = positions.Sum(x => x.CurrentBalance);
     var myStockCap = positions.Sum(x => x.Prices.FullAmount.Value);
-    var profitRub = portfolios.Portfolios.Single(x => x.BrokerAccount.Name == "Брокерский счёт").Positions.SingleOrDefault(x => x.Ticker == ticker)?.Yields.Yield.Absolute.Value ?? 0;
+    var profitRub = portfolios.Portfolios.Single(x => x.BrokerAccount.Name == "Акции").Positions.SingleOrDefault(x => x.Ticker == ticker)?.Yields.Yield.Absolute.Value ?? 0;
     //var profitRub = positions.Sum(x => x.Yields.Yield.Absolute.Value);
+
+    if(ticker == "TCSG")
+    {
+        //myStockCap = 0;
+    }
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
 }
 
