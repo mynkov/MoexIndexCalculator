@@ -78,7 +78,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeYear = changesYear[i]
     }).ToList();
 
-    var hh = list.SingleOrDefault(x => x.Ticker == "HEAD");
+    /*var hh = list.SingleOrDefault(x => x.Ticker == "HEAD");
     if (hh != null)
     {
         list.Add(new
@@ -92,7 +92,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
             ChangeYear = hh.ChangeYear
         });
         list.Remove(hh);
-    }
+    }*/
 
     list.Add(new
     {
@@ -307,7 +307,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
 
     if(ticker == "TCSG")
     {
-        //myStockCap = 0;
+        //myStockCap = 120000;
     }
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
 }
