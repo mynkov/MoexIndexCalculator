@@ -302,12 +302,12 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     var positions = portfolios.Portfolios.SelectMany(x => x.Positions).Where(x => x.Ticker == ticker);
     var myStockCount = positions.Sum(x => x.CurrentBalance);
     var myStockCap = positions.Sum(x => x.Prices.FullAmount.Value);
-    var profitRub = portfolios.Portfolios.Single(x => x.BrokerAccount.Name == "Акции").Positions.SingleOrDefault(x => x.Ticker == ticker)?.Yields.Yield.Absolute.Value ?? 0;
+    var profitRub = portfolios.Portfolios.Single(x => x.BrokerAccount.Name == "Interactive Brokers").Positions.SingleOrDefault(x => x.Ticker == ticker)?.Yields.Yield.Absolute.Value ?? 0;
     //var profitRub = positions.Sum(x => x.Yields.Yield.Absolute.Value);
 
     if(ticker == "TCSG")
     {
-        //myStockCap = 120000;
+        //myStockCap = 340010;
     }
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
 }
