@@ -611,7 +611,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
 
     var totalLoss = -allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.ProfitRub);
     var totalSell = allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.MyStockCap);
-    Write($"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.13 / 1000:0}k (13% tax), sell {totalSell / 1000:0}k ({totalSell * 0.0003 * 2 / 1000:0.000}k fee)");
+    Write($"\nMy total loss: {totalLoss / 1000:0}k, {totalLoss * 0.15 / 1000:0}k (15% tax), sell {totalSell / 1000:0}k ({totalSell * 0.0003 * 2 / 1000:0.000}k fee)");
     Write($"\nTotal dividend yield: {total.TotalDividendYield:P2} ({total.TotalDividendYield * 0.87:P2} after tax), {total.MyTotalCap * total.TotalDividendYield * 0.87 / 1000:0}k per year, {total.MyTotalCap * total.TotalDividendYield * 0.87 / 12 / 1000:0.0}k per month");
 
 
