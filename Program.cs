@@ -106,21 +106,6 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
     });
 
 
-    list.Add(new
-    {
-        Title = "Яндекс",
-        Cap = 1600.0,
-        Percent = 0.0,
-        Ticker = "YDEX",
-        Price = 0.0,
-        ChangeMonth = "0.0%",
-        ChangeYear = "0.0%"
-    });
-    var ya = list.SingleOrDefault(x => x.Ticker == "YNDX");
-    if (ya != null)
-    {
-        list.Remove(ya);
-    }
     /* 
          list.Add(new
          {
@@ -305,9 +290,9 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     var profitRub = portfolios.Portfolios.Single(x => x.BrokerAccount.Name == "Interactive Brokers").Positions.SingleOrDefault(x => x.Ticker == ticker)?.Yields.Yield.Absolute.Value ?? 0;
     //var profitRub = positions.Sum(x => x.Yields.Yield.Absolute.Value);
 
-    if(ticker == "TCSG")
+    if(ticker == "T")
     {
-        //myStockCap = 340010;
+        myStockCap = 340010;
     }
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
 }
@@ -371,7 +356,7 @@ void PrintForwardYearDividends(List<AllInfoView> allInfos)
 
     foreach (var divs in groupByMonth)
     {
-        Write($"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.DividendOnAllMyStocks) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.Where(x => x.DividendOnAllMyStocks > 0).OrderByDescending(x => x.DividendOnAllMyStocks).Select(x => $"\t\t\t\t{x.Date.Day}\t{x.Ticker}\t{x.DividendOnAllMyStocks * 0.87 / 1000:0.0}k\t{GetForecastText(x.IsForecast)}"))}");
+        Write($"\n{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(divs.Key.Month)}: {divs.Sum(x => x.DividendOnAllMyStocks) * 0.87 / 1000:0.0}k\n{string.Join("\n", divs.Where(x => x.DividendOnAllMyStocks > 0).OrderByDescending(x => x.DividendOnAllMyStocks).Select(x => $"\t\t\t\t{x.Date.Day}\t{x.Ticker.PadRight(4)}\t{x.DividendOnAllMyStocks * 0.87 / 1000:0.0}k\t{GetForecastText(x.IsForecast)}"))}");
     }
 
     Write("\n\n");
