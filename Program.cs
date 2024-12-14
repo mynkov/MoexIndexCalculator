@@ -167,7 +167,7 @@ static async Task<double> GetCapFromSmartLab(string ticker)
     return value;
 }
 
-static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks, bool checkPriviledgedStocks)
+static async Task<AllInfoWithTotal> GetAggregates(List<SmartLabInfo> smartLabStocks, bool checkPriviledgedStocks)
 {
     var result = new List<AllInfo>();
 
@@ -175,7 +175,7 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
     var portfolios = JsonSerializer.Deserialize<TinkoffPortfolios.TinkoffPortfolio>(portfolioText, TinkoffPortfolios.Converter.Settings);
 
     PrintNotInMyPortfolioTickers(portfolios, smartLabStocks);
-    PrintNotInIndexStocks(portfolios, smartLabStocks.Select(x => x.Ticker).ToList());
+    var notInIndexTotalCap = PrintNotInIndexStocks(portfolios, smartLabStocks.Select(x => x.Ticker).ToList());
 
     foreach (var smartLabInfo in smartLabStocks)
     {
@@ -197,10 +197,10 @@ static async Task<List<AllInfo>> GetAggregates(List<SmartLabInfo> smartLabStocks
         }
     }
 
-    return result;
+    return new AllInfoWithTotal(result, notInIndexTotalCap);
 }
 
-static void PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios, List<string> tickers)
+static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios, List<string> tickers)
 {
     var positions = portfolios.Portfolios.SelectMany(x => x.Positions).OrderByDescending(x => x.SecurityType).ToList();
     var allMyTickers = positions.Select(x => x.Ticker).ToList();
@@ -240,6 +240,8 @@ static void PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios,
     WriteLine($"Total cap: {totalCap / 1000:0}k");
 
     WriteLine();
+
+    return totalCap;
 }
 
 static void PrintNotInMyPortfolioTickers(TinkoffPortfolios.TinkoffPortfolio portfolios, List<SmartLabInfo> smartLabInfos)
@@ -293,6 +295,12 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     if(ticker == "T")
     {
         myStockCap = 340010;
+    }
+    if(ticker == "PLZL")
+    {
+        var price = myStockCap/myStockCount;
+        myStockCount += 59;
+        myStockCap = price * myStockCount;
     }
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
 }
@@ -394,8 +402,9 @@ static async Task<MoexInfo> GetMoexInfo(string ticker)
     return new MoexInfo(listing);
 }
 
-static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
+static AllInfoViews GetAllInfoViews(AllInfoWithTotal allInfoWithTotal)
 {
+    var allInfos = allInfoWithTotal.AllInfos;
     var myTotalCap = allInfos.Sum(x => x.MyStock.Cap);
     var totalBuyRub = 0.0;
     var totalBuyCount = 0;
@@ -505,7 +514,7 @@ static AllInfoViews GetAllInfoViews(List<AllInfo> allInfos)
         }
     }
 
-    return new AllInfoViews(models, new TotalInfo(myTotalCap, totalBuyRub, totalBuyCount, totalDividendYield, totalForecastDividendPayment));
+    return new AllInfoViews(models, new TotalInfo(myTotalCap, totalBuyRub, totalBuyCount, totalDividendYield, totalForecastDividendPayment, allInfoWithTotal.NotInIndexTotalCap));
 }
 
 static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo total, string title)
@@ -591,7 +600,10 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
         }
     }
 
-    Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}");
+    var notInIndexTotalCap = total.NotInIndexTotalCap;
+    var allCapInTinkoff = total.MyTotalCap + notInIndexTotalCap;
+    var allCap = allCapInTinkoff + 200000 + 642000 + 1739000;
+    Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}, {allCapInTinkoff / 1000000:0.000}, {allCap / 1000000:0.000}");
     Write($"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)");
 
     var totalLoss = -allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.ProfitRub);
@@ -644,6 +656,8 @@ public record SmartLabInfo(int Index, string Title, string Ticker, double Cap, d
 
 public record AllInfo(SmartLabInfo SmartLabInfo, Payload TinkoffInfoPayload, MoexInfo MoexInfo, DohodDividends DohodDividends, MyTinkoffStock MyStock);
 
+public record AllInfoWithTotal(List<AllInfo> AllInfos, double NotInIndexTotalCap);
+
 public record AllInfoView(SmartLabInfo SmartLabInfo, MyStock MyStock, TinkoffInfo TinkoffInfo, MoexInfo MoexInfo, CalculatedInfo CalculatedInfo, DividendInfo DividendInfo);
 
 public record AllInfoViews(List<AllInfoView> AllInfos, TotalInfo Total);
@@ -656,7 +670,7 @@ public record CalculatedInfo(double MyPercent, double MyDiff, double AmountToBuy
 
 public record TinkoffInfo(string Ticker, long LotSize, Currency Currency, string Isin, string ExchangeStatus, bool IsLowLiquid, long RiskCategory, bool Reliable);
 
-public record TotalInfo(double MyTotalCap, double TotalBuyRub, int TotalBuyCount, double TotalDividendYield, double TotalForecastDividendPayment);
+public record TotalInfo(double MyTotalCap, double TotalBuyRub, int TotalBuyCount, double TotalDividendYield, double TotalForecastDividendPayment, double NotInIndexTotalCap);
 
 public record MoexInfo(int Listing);
 
