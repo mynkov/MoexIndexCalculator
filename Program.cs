@@ -294,12 +294,24 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
 
     if(ticker == "T")
     {
-        myStockCap = 340010;
+        //myStockCap = 340010;
     }
     if(ticker == "PLZL")
     {
         var price = myStockCap/myStockCount;
-        myStockCount += 59;
+        myStockCount += 82;
+        myStockCap = price * myStockCount;
+    }
+    if(ticker == "GMKN")
+    {
+        var price = myStockCap/myStockCount;
+        myStockCount += 9490;
+        myStockCap = price * myStockCount;
+    }
+    if(ticker == "LKOH")
+    {
+        var price = myStockCap/myStockCount;
+        myStockCount += 320;
         myStockCap = price * myStockCount;
     }
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
@@ -592,7 +604,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
             var myStockCapText = myStock.MyStockCap >= 1000000 ? $"{myStock.MyStockCap / 1000:0}" : $"{myStock.MyStockCap / 1000:0}\t";
             var profitRubText = myStock.ProfitRub != 0 ? myStock.ProfitRub > 0 && myStock.ProfitRub < 1000 ? $"{myStock.ProfitRub:0} " : $"{myStock.ProfitRub:0}" : "    ";
 
-            WriteLine($"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{forecastYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t\t{allInfoView.DividendInfo.ForecastDividendOnStock / 1000:0.000}\t{allInfoView.DividendInfo.ForecastYearDividends * 0.87 / 1000:0}\t{profitRubText}\t{smartLabInfo.Title}");
+            WriteLine($"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{forecastYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker.PadRight(4)}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t\t{allInfoView.DividendInfo.ForecastDividendOnStock / 1000:0.000}\t{allInfoView.DividendInfo.ForecastYearDividends * 0.87 / 1000:0}\t{profitRubText}\t{smartLabInfo.Title}");
         }
         catch (Exception exc)
         {
@@ -602,7 +614,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
 
     var notInIndexTotalCap = total.NotInIndexTotalCap;
     var allCapInTinkoff = total.MyTotalCap + notInIndexTotalCap;
-    var allCap = allCapInTinkoff + 200000 + 642000 + 1739000;
+    var allCap = allCapInTinkoff + 235000 + 642000 + 1000000 + 1700000 - 470000;
     Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}, {allCapInTinkoff / 1000000:0.000}, {allCap / 1000000:0.000}");
     Write($"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)");
 
