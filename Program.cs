@@ -292,29 +292,33 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     var profitRub = portfolios.Portfolios.Single(x => x.BrokerAccount.Name == "Interactive Brokers").Positions.SingleOrDefault(x => x.Ticker == ticker)?.Yields.Yield.Absolute.Value ?? 0;
     //var profitRub = positions.Sum(x => x.Yields.Yield.Absolute.Value);
 
-    if(ticker == "T")
+    switch (ticker)
     {
-        //myStockCap = 340010;
-    }
-    if(ticker == "PLZL")
-    {
-        var price = myStockCap/myStockCount;
-        myStockCount += 82;
-        myStockCap = price * myStockCount;
-    }
-    if(ticker == "GMKN")
-    {
-        var price = myStockCap/myStockCount;
-        myStockCount += 9490;
-        myStockCap = price * myStockCount;
-    }
-    if(ticker == "LKOH")
-    {
-        var price = myStockCap/myStockCount;
-        myStockCount += 320;
-        myStockCap = price * myStockCount;
-    }
+        case "T":
+            //myStockCap = 340010;
+            break;
+        case "PLZL":
+            AddStocks(82);
+            break;
+        case "GMKN":
+            AddStocks(9490);
+            break;
+        case "LKOH":
+            AddStocks(320);
+            break;
+        case "ROSN":
+            AddStocks(173);
+            break;
+    };
+
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
+
+    void AddStocks(int stocksAmount)
+    {
+        var price = myStockCap / myStockCount;
+        myStockCount += stocksAmount;
+        myStockCap = price * myStockCount;
+    }
 }
 
 static async Task<DohodDividends> GetDohodDividends(string ticker)
@@ -614,7 +618,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
 
     var notInIndexTotalCap = total.NotInIndexTotalCap;
     var allCapInTinkoff = total.MyTotalCap + notInIndexTotalCap;
-    var allCap = allCapInTinkoff + 235000 + 642000 + 1000000 + 1700000 - 470000;
+    var allCap = allCapInTinkoff + 235000 + 642000 + 1000000 + 1700000 - 450000;
     Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}, {allCapInTinkoff / 1000000:0.000}, {allCap / 1000000:0.000}");
     Write($"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)");
 
