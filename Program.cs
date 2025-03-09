@@ -78,21 +78,21 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeYear = changesYear[i]
     }).ToList();
 
-    /*var hh = list.SingleOrDefault(x => x.Ticker == "HEAD");
-    if (hh != null)
+    var stock = list.SingleOrDefault(x => x.Ticker == "VTBR");
+    if (stock != null)
     {
         list.Add(new
         {
-            Title = hh.Title,
-            Cap = hh.Cap + 1,
-            Percent = hh.Percent,
-            Ticker = "HHRU",
-            Price = hh.Price,
-            ChangeMonth = hh.ChangeMonth,
-            ChangeYear = hh.ChangeYear
+            Title = stock.Title,
+            Cap = stock.Cap * 2.2,
+            Percent = stock.Percent,
+            Ticker = stock.Ticker,
+            Price = stock.Price,
+            ChangeMonth = stock.ChangeMonth,
+            ChangeYear = stock.ChangeYear
         });
-        list.Remove(hh);
-    }*/
+        list.Remove(stock);
+    }
 
     list.Add(new
     {
@@ -306,7 +306,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     switch (ticker)
     {
         case "T":
-            //myStockCap = 628010;
+            //myStockCap = 728010;
             break;
         case "PLZL":
             AddStocks(82);
@@ -629,7 +629,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
 
     var notInIndexTotalCap = total.NotInIndexTotalCap;
     var allCapInTinkoff = total.MyTotalCap + notInIndexTotalCap;
-    var allCap = allCapInTinkoff + 235000 + 642000 + 1000000 - 450000;
+    var allCap = allCapInTinkoff + 235000 + 642000 + 1000000 - 430000;
     Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}, {allCapInTinkoff / 1000000:0.000}, {allCap / 1000000:0.000}");
     Write($"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)");
 
