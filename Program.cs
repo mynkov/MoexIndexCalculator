@@ -107,7 +107,7 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
 
     list.Add(new
     {
-        Title = "Пятюнечка",
+        Title = "Моя Пятюнечка",
         Cap = await GetCapFromSmartLab("X5"),
         Percent = 0.0,
         Ticker = "X5",
@@ -115,6 +115,39 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeMonth = "0.0%",
         ChangeYear = "0.0%"
     });
+
+    list.Add(new
+    {
+        Title = "Мой Ozon",
+        Cap = await GetCapFromSmartLab("OZON"),
+        Percent = 0.0,
+        Ticker = "OZON",
+        Price = 0.0,
+        ChangeMonth = "0.0%",
+        ChangeYear = "0.0%"
+    });
+
+    list.Add(new
+    {
+        Title = "Мой РусАгро",
+        Cap = await GetCapFromSmartLab("RAGR"),
+        Percent = 0.0,
+        Ticker = "RAGR",
+        Price = 0.0,
+        ChangeMonth = "0.0%",
+        ChangeYear = "0.0%"
+    });
+
+    // list.Add(new
+    // {
+    //     Title = "Мой Циан",
+    //     Cap = await GetCapFromSmartLab("CNRU"),
+    //     Percent = 0.0,
+    //     Ticker = "CNRU",
+    //     Price = 0.0,
+    //     ChangeMonth = "0.0%",
+    //     ChangeYear = "0.0%"
+    // });
 
 
     /* 
@@ -309,7 +342,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
             //myStockCap = 728010;
             break;
         case "PLZL":
-            AddStocks(82);
+            AddStocks(820);
             break;
         case "GMKN":
             AddStocks(9490);
@@ -318,7 +351,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
             AddStocks(462);
             break;
         case "ROSN":
-            AddStocks(1907);
+            AddStocks(2445);
             break;
     };
 
