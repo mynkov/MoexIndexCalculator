@@ -27,9 +27,9 @@ var allSmartLabStocks = await GetSmartLabInfos("https://smart-lab.ru/q/index_sto
 //PrintCompanies(allCompanies, "All companies:");
 var allAggregates = await GetAggregates(allSmartLabStocks, checkPriviledgedStocks);
 var wideAllInfoViews = GetAllInfoViews(allAggregates);
-PrintAllInfoViews(wideAllInfoViews.AllInfos, wideAllInfoViews.Total, "All companies:");
+PrintAllInfoViews(wideAllInfoViews.AllInfos, wideAllInfoViews.Total, allAggregates.UsdPrice, "All companies:");
 
-PrintAllInfoViews(wideAllInfoViews.AllInfos.OrderByDescending(x => x.CalculatedInfo.MyDiffRub), wideAllInfoViews.Total, "Need to buy first:");
+PrintAllInfoViews(wideAllInfoViews.AllInfos.OrderByDescending(x => x.CalculatedInfo.MyDiffRub), wideAllInfoViews.Total, allAggregates.UsdPrice, "Need to buy first:");
 
 PrintForwardYearDividends(wideAllInfoViews.AllInfos);
 
@@ -208,7 +208,8 @@ static async Task<AllInfoWithTotal> GetAggregates(List<SmartLabInfo> smartLabSto
     var portfolios = JsonSerializer.Deserialize<TinkoffPortfolios.TinkoffPortfolio>(portfolioText, TinkoffPortfolios.Converter.Settings);
 
     PrintNotInMyPortfolioTickers(portfolios, smartLabStocks);
-    var notInIndexTotalCap = PrintNotInIndexStocks(portfolios, smartLabStocks.Select(x => x.Ticker).ToList());
+    double usdPrice;
+    var notInIndexTotalCap = PrintNotInIndexStocks(portfolios, smartLabStocks.Select(x => x.Ticker).ToList(), out usdPrice);
 
     foreach (var smartLabInfo in smartLabStocks)
     {
@@ -230,10 +231,10 @@ static async Task<AllInfoWithTotal> GetAggregates(List<SmartLabInfo> smartLabSto
         }
     }
 
-    return new AllInfoWithTotal(result, notInIndexTotalCap);
+    return new AllInfoWithTotal(result, notInIndexTotalCap, usdPrice);
 }
 
-static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios, List<string> tickers)
+static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolios, List<string> tickers, out double usdPrice)
 {
     var positions = portfolios.Portfolios.SelectMany(x => x.Positions).OrderByDescending(x => x.SecurityType).ToList();
     var allMyTickers = positions.Select(x => x.Ticker).ToList();
@@ -241,6 +242,7 @@ static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolio
 
 
     var totalCap = 0.0;
+    usdPrice = 0.0;
 
     foreach (var ticker in notInIndexTickers)
     {
@@ -264,6 +266,11 @@ static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolio
 
         var type = myStock.SecurityType;
         var typeText = type == TinkoffPortfolios.SecurityType.Currency ? "currencies" : $"{type.ToString().ToLower()}s";
+
+        if(ticker == "USDRUB")
+        {
+            usdPrice = myStock.Prices.CurrentPrice.Value;
+        }
 
         var link = $"https://www.tinkoff.ru/invest/{typeText}/{ticker}".PadRight(55);
         WriteLine($"{tickerText}\t{isinText}\t{isRuText}\t{capText}\t{currencyText}\t\t{link}\t{name}");
@@ -566,7 +573,7 @@ static AllInfoViews GetAllInfoViews(AllInfoWithTotal allInfoWithTotal)
     return new AllInfoViews(models, new TotalInfo(myTotalCap, totalBuyRub, totalBuyCount, totalDividendYield, totalForecastDividendPayment, allInfoWithTotal.NotInIndexTotalCap));
 }
 
-static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo total, string title)
+static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo total, double usdPrice, string title)
 {
     WriteLine(title);
     WriteLine();
@@ -652,7 +659,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
     var notInIndexTotalCap = total.NotInIndexTotalCap;
     var allCapInTinkoff = total.MyTotalCap + notInIndexTotalCap;
     var allCap = allCapInTinkoff + 235000 + 642000;
-    Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}, {allCapInTinkoff / 1000000:0.000}, {allCap / 1000000:0.000}");
+    Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}, {allCapInTinkoff / 1000000:0.000}, {allCap / 1000000:0.000}, \t{allCap / 1000 / usdPrice:0}k $ ({usdPrice:0.0}р)");
     Write($"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)");
 
     var totalLoss = -allInfoViews.Where(x => x.MyStock.ProfitRub < 0).Sum(x => x.MyStock.ProfitRub);
@@ -705,7 +712,7 @@ public record SmartLabInfo(int Index, string Title, string Ticker, double Cap, d
 
 public record AllInfo(SmartLabInfo SmartLabInfo, Payload TinkoffInfoPayload, MoexInfo MoexInfo, DohodDividends DohodDividends, MyTinkoffStock MyStock);
 
-public record AllInfoWithTotal(List<AllInfo> AllInfos, double NotInIndexTotalCap);
+public record AllInfoWithTotal(List<AllInfo> AllInfos, double NotInIndexTotalCap, double UsdPrice);
 
 public record AllInfoView(SmartLabInfo SmartLabInfo, MyStock MyStock, TinkoffInfo TinkoffInfo, MoexInfo MoexInfo, CalculatedInfo CalculatedInfo, DividendInfo DividendInfo);
 
