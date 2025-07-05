@@ -100,28 +100,6 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeYear = "0.0%"
     });
 
-    list.Add(new
-    {
-        Title = "Мой РусАгро",
-        Cap = await GetCapFromSmartLab("RAGR"),
-        Percent = 0.0,
-        Ticker = "RAGR",
-        Price = 0.0,
-        ChangeMonth = "0.0%",
-        ChangeYear = "0.0%"
-    });
-
-    list.Add(new
-    {
-        Title = "Мой Циан",
-        Cap = 41.0,//await GetCapFromSmartLab("CNRU"),
-        Percent = 0.0,
-        Ticker = "CNRU",
-        Price = 0.0,
-        ChangeMonth = "0.0%",
-        ChangeYear = "0.0%"
-    });
-
 
     /* 
          list.Add(new
@@ -251,7 +229,7 @@ static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolio
         var type = myStock.SecurityType;
         var typeText = type == TinkoffPortfolios.SecurityType.Currency ? "currencies" : $"{type.ToString().ToLower()}s";
 
-        if(ticker == "USDRUB")
+        if(ticker == "USD000UTSTOM")
         {
             usdPrice = myStock.Prices.CurrentPrice.Value;
         }
