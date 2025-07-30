@@ -326,11 +326,11 @@ namespace TinkoffPortfolios
 
     public enum Currency { Rub, Usd };
 
-    public enum TypeEnum { PriceInMoney };
+    public enum TypeEnum { PriceInMoney, PriceProjection };
 
     public enum TextColor { Ffffff, The000000 };
 
-    public enum SecurityType { Bond, Currency, Etf, Stock };
+    public enum SecurityType { Bond, Currency, Etf, Stock, Futures };
 
     public partial class Welcome
     {
@@ -428,6 +428,10 @@ namespace TinkoffPortfolios
             {
                 return TypeEnum.PriceInMoney;
             }
+            if (value == "price_projection")
+            {
+                return TypeEnum.PriceProjection;
+            }
             throw new Exception("Cannot unmarshal type TypeEnum");
         }
 
@@ -436,6 +440,11 @@ namespace TinkoffPortfolios
             if (value == TypeEnum.PriceInMoney)
             {
                 JsonSerializer.Serialize(writer, "price_in_money", options);
+                return;
+            }
+            if (value == TypeEnum.PriceProjection)
+            {
+                JsonSerializer.Serialize(writer, "price_projection", options);
                 return;
             }
             throw new Exception("Cannot marshal type TypeEnum");
@@ -495,6 +504,8 @@ namespace TinkoffPortfolios
                     return SecurityType.Etf;
                 case "stock":
                     return SecurityType.Stock;
+                case "futures":
+                    return SecurityType.Futures;
             }
             throw new Exception("Cannot unmarshal type SecurityType");
         }
@@ -514,6 +525,9 @@ namespace TinkoffPortfolios
                     return;
                 case SecurityType.Stock:
                     JsonSerializer.Serialize(writer, "stock", options);
+                    return;
+                case SecurityType.Futures:
+                    JsonSerializer.Serialize(writer, "futures", options);
                     return;
             }
             throw new Exception("Cannot marshal type SecurityType");

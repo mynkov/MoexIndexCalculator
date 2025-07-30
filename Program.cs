@@ -227,9 +227,10 @@ static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolio
         var tickerText = ticker.PadRight(18);
 
         var type = myStock.SecurityType;
-        var typeText = type == TinkoffPortfolios.SecurityType.Currency ? "currencies" : $"{type.ToString().ToLower()}s";
+        var typeText = type == TinkoffPortfolios.SecurityType.Futures ? "futures" :
+        type == TinkoffPortfolios.SecurityType.Currency ? "currencies" : $"{type.ToString().ToLower()}s";
 
-        if(ticker == "USD000UTSTOM")
+        if (ticker == "USD000UTSTOM")
         {
             usdPrice = myStock.Prices.CurrentPrice.Value;
         }
@@ -297,7 +298,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     switch (ticker)
     {
         case "T":
-            //myStockCap = 700000;
+            //myStockCap = 730000;
             break;
         case "PLZL":
             AddStocks(820);
@@ -311,7 +312,8 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
         case "ROSN":
             AddStocks(3144);
             break;
-    };
+    }
+    ;
 
     return new MyTinkoffStock(myStockCap, (int)myStockCount, profitRub);
 
