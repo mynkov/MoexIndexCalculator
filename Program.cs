@@ -309,7 +309,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     switch (ticker)
     {
         case "T":
-            //myStockCap = 785000;
+            myStockCap = 785000;
             break;
         case "PLZL":
             AddStocks(820);
@@ -318,10 +318,10 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
             AddStocks(9490);
             break;
         case "LKOH":
-            AddStocks(537);
+            AddStocks(555);
             break;
         case "ROSN":
-            AddStocks(3658);
+            AddStocks(3921);
             break;
     }
     ;
