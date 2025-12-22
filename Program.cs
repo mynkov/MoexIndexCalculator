@@ -89,29 +89,6 @@ static async Task<List<SmartLabInfo>> GetSmartLabInfos(string url, bool fromFile
         ChangeYear = "0.0%"
     });
 
-    list.Add(new
-    {
-        Title = "Мой Ozon",
-        Cap = await GetCapFromSmartLab("OZON"),
-        Percent = 0.0,
-        Ticker = "OZON",
-        Price = 0.0,
-        ChangeMonth = "0.0%",
-        ChangeYear = "0.0%"
-    });
-
-    list.Add(new
-    {
-        Title = "Мой Fix",
-        Cap = 95.0,
-        Percent = 0.0,
-        Ticker = "FIXR",
-        Price = 0.0,
-        ChangeMonth = "0.0%",
-        ChangeYear = "0.0%"
-    });
-
-
     /* 
          list.Add(new
          {
@@ -322,6 +299,9 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
             break;
         case "ROSN":
             AddStocks(3921);
+            break;
+        case "SBERP":
+            //AddStocks(19377);
             break;
     }
     ;
