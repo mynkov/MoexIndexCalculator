@@ -286,7 +286,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
     switch (ticker)
     {
         case "T":
-            myStockCap = 823000;
+            //myStockCap = 873000;
             break;
         case "PLZL":
             AddStocks(820);
@@ -613,7 +613,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
 
     var notInIndexTotalCap = total.NotInIndexTotalCap;
     var allCapInTinkoff = total.MyTotalCap + notInIndexTotalCap;
-    var allCap = allCapInTinkoff + 235000 + 642000;
+    var allCap = allCapInTinkoff + 255000 + 642000;
     Write($"\nMy total cap: {total.MyTotalCap / 1000000:0.000}, {allCapInTinkoff / 1000000:0.000}, {allCap / 1000000:0.000}, \t{allCap / 1000 / usdPrice:0}k $ ({usdPrice:0.0}р)");
     Write($"\nMy total buy: {total.TotalBuyRub / 1000:0}k ({total.TotalBuyCount}шт)");
 
