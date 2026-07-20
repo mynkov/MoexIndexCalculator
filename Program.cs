@@ -181,6 +181,33 @@ static async Task<AllInfoWithTotal> GetAggregates(List<SmartLabInfo> smartLabSto
         }
     }
 
+    var tickers = smartLabStocks.Select(x => x.Ticker).ToList();
+    var positions = portfolios.Portfolios.SelectMany(x => x.Positions).OrderByDescending(x => x.SecurityType).ToList();
+    var allMyTickers = positions.Select(x => x.Ticker).ToList();
+    var notInIndexTickers = allMyTickers.Except(tickers.Union(tickers.Select(x => $"{x}P")));
+
+    foreach (var ticker1 in notInIndexTickers)
+    {
+        try
+        {
+            continue;
+            var tinkoffTickerInfo = await GetTinkoffTickerInfo(ticker1, checkPriviledgedStocks);
+            var ticker = tinkoffTickerInfo?.Payload?.Symbol?.Ticker;
+
+            var myStock = GetMyTinkoffStock(ticker, portfolios);
+            var moexInfo = await GetMoexInfo(ticker);
+            var dohodDividends = await GetDohodDividends(ticker);
+
+            result.Add(new AllInfo(new SmartLabInfo(0, "Title", ticker1, 0.0, 0.0, 0.0, 0.0, 0.0, "+0.0%", "+0.0%"), tinkoffTickerInfo.Payload, moexInfo, dohodDividends, myStock));
+
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(ticker1 + exc);
+            //throw new Exception(ticker1, exc);
+        }
+    }
+
     return new AllInfoWithTotal(result, notInIndexTotalCap, usdPrice);
 }
 
@@ -194,8 +221,29 @@ static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolio
     var totalCap = 0.0;
     usdPrice = 0.0;
 
+    var totalForecastDividendPayment = 0.0;
+
     foreach (var ticker in notInIndexTickers)
     {
+        // dividens
+        var dohodDividends = GetDohodDividends(ticker).GetAwaiter().GetResult();
+        //var now = DateTime.Now;
+        //var lastYearDividend = dohodDividends.Dividends.Where(x => x.Date > now.AddYears(-1) && x.Date <= now).Sum(x => x.Value);
+        //var dividendYield = price != 0.0 ? lastYearDividend / price : 0;
+        //var dividendWeighted = smartLabInfo.NewPercent * dividendYield;
+
+        //totalDividendYield += dividendWeighted;
+
+
+        var myStock1 = GetMyTinkoffStock(ticker, portfolios);
+        // var tinkoffTickerInfo = GetTinkoffTickerInfo(ticker, true).GetAwaiter().GetResult();
+        var price = positions.First(x => x.Ticker == ticker).Prices.CurrentPrice.Value;
+        var myStocksCount = myStock1.Count; //price != 0.0 ? myStockCap / price : 0;
+        var allForecastDividends = dohodDividends.ForwardYearDividend * myStocksCount;
+        var forecastYield = price != 0.0 ? dohodDividends.ForwardYearDividend / price : 0;
+        totalForecastDividendPayment += allForecastDividends;
+        // dividends
+
         var cap = positions.Where(x => x.Ticker == ticker).Sum(x => x.Prices.FullAmount.Value);
         var capText = $"{cap / 1000:0.0}".PadRight(5);
         totalCap += cap;
@@ -224,11 +272,12 @@ static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolio
         }
 
         var link = $"https://www.tinkoff.ru/invest/{typeText}/{ticker}".PadRight(55);
-        WriteLine($"{tickerText}\t{isinText}\t{isRuText}\t{capText}\t{currencyText}\t\t{link}\t{name}");
+        WriteLine($"{tickerText}\t{isinText}\t{isRuText}\t{capText}\t{currencyText}\t\t{link}\t{name}\t{allForecastDividends}");
     }
 
     WriteLine();
     WriteLine($"Total cap: {totalCap / 1000:0}k");
+    WriteLine(totalForecastDividendPayment.ToString());
 
     WriteLine();
 
@@ -289,16 +338,16 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
             //myStockCap = 873000;
             break;
         case "PLZL":
-            AddStocks(820);
+            AddStocks(1727);
             break;
         case "GMKN":
             AddStocks(9490);
             break;
         case "LKOH":
-            AddStocks(659);
+            AddStocks(678);
             break;
         case "ROSN":
-            AddStocks(4504);
+            AddStocks(5483);
             break;
         case "SBERP":
             AddStocks(19377);
