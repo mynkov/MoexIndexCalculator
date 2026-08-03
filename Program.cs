@@ -301,7 +301,10 @@ static void PrintNotInMyPortfolioTickers(TinkoffPortfolios.TinkoffPortfolio port
 
 static async Task<TickerInfo> GetTinkoffTickerInfo(string ticker, bool checkPriviledgedStocks)
 {
-    var client = new HttpClient();
+    using var client = new HttpClient(new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+    });
     const string searchTickerUrl = "https://www.tinkoff.ru/api/trading/stocks/get?ticker";
 
     TickerInfo tinkoffPrefTickerInfo = null;
@@ -347,7 +350,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
             AddStocks(678);
             break;
         case "ROSN":
-            AddStocks(5483);
+            AddStocks(5489);
             break;
         case "SBERP":
             AddStocks(19377);
