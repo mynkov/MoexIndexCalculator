@@ -350,7 +350,7 @@ static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.Tinkoff
             AddStocks(678);
             break;
         case "ROSN":
-            AddStocks(5489);
+            AddStocks(5648);
             break;
         case "SBERP":
             AddStocks(19377);
