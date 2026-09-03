@@ -271,7 +271,7 @@ static double PrintNotInIndexStocks(TinkoffPortfolios.TinkoffPortfolio portfolio
             usdPrice = myStock.Prices.CurrentPrice.Value;
         }
 
-        var link = $"https://www.tinkoff.ru/invest/{typeText}/{ticker}".PadRight(55);
+        var link = $"https://www.tbank.ru/invest/{typeText}/{ticker}".PadRight(55);
         WriteLine($"{tickerText}\t{isinText}\t{isRuText}\t{capText}\t{currencyText}\t\t{link}\t{name}\t{allForecastDividends}");
     }
 
@@ -293,7 +293,7 @@ static void PrintNotInMyPortfolioTickers(TinkoffPortfolios.TinkoffPortfolio port
     foreach (var ticker in notInMyPortfolioTickers)
     {
         var smartLabInfo = smartLabInfos.Single(x => x.Ticker == ticker);
-        WriteLine($"https://www.tinkoff.ru/invest/stocks/{ticker}\t{smartLabInfo.Title}");
+        WriteLine($"https://www.tbank.ru/invest/stocks/{ticker}\t{smartLabInfo.Title}");
     }
 
     WriteLine();
@@ -305,7 +305,7 @@ static async Task<TickerInfo> GetTinkoffTickerInfo(string ticker, bool checkPriv
     {
         ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
     });
-    const string searchTickerUrl = "https://www.tinkoff.ru/api/trading/stocks/get?ticker";
+    const string searchTickerUrl = "https://www.tbank.ru/api/trading/stocks/get?ticker";
 
     TickerInfo tinkoffPrefTickerInfo = null;
     if (checkPriviledgedStocks && ticker != "BSPB" && ticker != "SELG")
@@ -324,7 +324,7 @@ static async Task<TickerInfo> GetTinkoffTickerInfo(string ticker, bool checkPriv
 
 static MyTinkoffStock GetMyTinkoffStock(string ticker, TinkoffPortfolios.TinkoffPortfolio portfolios)
 {
-    // https://www.tinkoff.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
+    // https://www.tbank.ru/api/invest-gw/ca-portfolio/api/v1/user/portfolio/pie-chart
     //var text = File.ReadAllText("MyStocks.json");
     //var myStocks = JsonSerializer.Deserialize<Stocks>(text, QuickType.Converter.Settings);
     //var myStock = myStocks.Issuers.FirstOrDefault(x => x.InstrumentInfo != null && x.InstrumentInfo.Any(x => x.Ticker == ticker));
@@ -655,7 +655,7 @@ static void PrintAllInfoViews(IEnumerable<AllInfoView> allInfoViews, TotalInfo t
             var myStockCapText = myStock.MyStockCap >= 1000000 ? $"{myStock.MyStockCap / 1000:0}" : $"{myStock.MyStockCap / 1000:0}\t";
             var profitRubText = myStock.ProfitRub != 0 ? myStock.ProfitRub > 0 && myStock.ProfitRub < 1000 ? $"{myStock.ProfitRub:0} " : $"{myStock.ProfitRub:0}" : "    ";
 
-            WriteLine($"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{forecastYieldText}\t{exchangeStatusText}\thttps://www.tinkoff.ru/invest/stocks/{tinkoffInfo.Ticker.PadRight(4)}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t\t{allInfoView.DividendInfo.ForecastDividendOnStock / 1000:0.000}\t{allInfoView.DividendInfo.ForecastYearDividends * 0.87 / 1000:0}\t{profitRubText}\t{smartLabInfo.Title}");
+            WriteLine($"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t\t{calculatedInfo.MyPercent:P2}\t{calculatedInfo.MyDiff:+0.00%;-0.00%}\t{myStockCapText}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t\t{smartLabInfo.Cap:0.00}\t{changeYearText}\t{changeMonthText}\t{dividendYieldText}\t{forecastYieldText}\t{exchangeStatusText}\thttps://www.tbank.ru/invest/stocks/{tinkoffInfo.Ticker.PadRight(4)}\t{amountToBuyText}\t{myDiffRubText}\t{lotPriceText}\t{priceText}\t{lotSizeText}\t{tinkoffInfo.Isin}\t{notRusIsinText}\t{currencyText}\t{isLowLiquidText}\t{listingText}\t{riskCategoryText}\t{reliableText}\t{lastYearDividendText}\t{dividendWeightedText}\t\t{allInfoView.DividendInfo.ForecastDividendOnStock / 1000:0.000}\t{allInfoView.DividendInfo.ForecastYearDividends * 0.87 / 1000:0}\t{profitRubText}\t{smartLabInfo.Title}");
         }
         catch (Exception exc)
         {
@@ -689,7 +689,7 @@ static void PrintSmartLabInfos(List<SmartLabInfo> smartLabInfos, string title)
 
     foreach (var smartLabInfo in smartLabInfos)
     {
-        WriteLine($"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t{smartLabInfo.Cap:0.00}\thttps://www.tinkoff.ru/invest/stocks/{smartLabInfo.Ticker}\t{smartLabInfo.Price / 1000:0.000}\t{smartLabInfo.Title}");
+        WriteLine($"{smartLabInfo.Index}\t{smartLabInfo.NewPercent:P2}\t{smartLabInfo.Percent:P2}\t{smartLabInfo.PercentDiff:+0.00%;-0.00%}\t{smartLabInfo.Cap:0.00}\thttps://www.tbank.ru/invest/stocks/{smartLabInfo.Ticker}\t{smartLabInfo.Price / 1000:0.000}\t{smartLabInfo.Title}");
     }
     WriteLine();
     WriteLine();
